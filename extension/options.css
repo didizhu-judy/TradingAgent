@@ -1,0 +1,31 @@
+@import "shared.css";
+
+body { padding: 20px; max-width: 480px; }
+
+.options-title { margin: 0 0 4px 0; font-size: 18px; }
+.options-hint { font-size: 12px; color: var(--text-secondary); margin-bottom: 20px; }
+
+label { display: block; margin-top: 14px; font-weight: 500; color: var(--text-secondary); font-size: 12px; }
+
+input, select {
+  width: 100%;
+  padding: 10px 12px;
+  margin-top: 4px;
+  box-sizing: border-box;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  font-size: 13px;
+}
+
+input::placeholder { color: var(--text-secondary); }
+input:focus, select:focus { outline: none; border-color: var(--accent); }
+
+input[type="checkbox"] { width: auto; margin-right: 8px; }
+
+.options-row { display: flex; align-items: center; gap: 8px; margin-top: 16px; }
+.options-row label { margin-top: 0; }
+
+#save { margin-top: 20px; }
+#status { margin-left: 10px; font-size: 13px; color: var(--green); }

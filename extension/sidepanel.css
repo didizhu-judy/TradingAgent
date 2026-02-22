@@ -1,0 +1,7 @@
+@import "shared.css";
+
+body { min-height: 100vh; }
+
+.app-inner { padding: 0 0 16px 0; }
+
+.section { margin: 14px 16px; }

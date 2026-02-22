@@ -1,3 +1,4 @@
+/* 共用数据与渲染逻辑：popup / sidepanel / widget 均可使用 */
 import { getAccountSummary, getPositions, getConfig } from './api.js';
 
 const el = {
@@ -8,9 +9,7 @@ const el = {
   summaryRows: document.getElementById('summaryRows'),
   positionsList: document.getElementById('positionsList'),
   refresh: document.getElementById('refresh'),
-  openOptions: document.getElementById('openOptions'),
-  openSidePanel: document.getElementById('openSidePanel'),
-  openFloating: document.getElementById('openFloating')
+  openOptions: document.getElementById('openOptions')
 };
 
 function show(which) {
@@ -80,7 +79,7 @@ async function load() {
   }
   show('loading');
   if (el.loading) el.loading.classList.add('loading-dots');
-  el.refresh.disabled = true;
+  if (el.refresh) el.refresh.disabled = true;
   try {
     const [summary, positions] = await Promise.all([getAccountSummary(), getPositions()]);
     renderSummary(summary);
@@ -90,40 +89,14 @@ async function load() {
     setError(err.message || '请求失败');
   } finally {
     if (el.loading) el.loading.classList.remove('loading-dots');
-    el.refresh.disabled = false;
+    if (el.refresh) el.refresh.disabled = false;
   }
 }
 
-el.refresh.addEventListener('click', load);
-el.openOptions.addEventListener('click', function(e) {
+if (el.refresh) el.refresh.addEventListener('click', load);
+if (el.openOptions) el.openOptions.addEventListener('click', function(e) {
   e.preventDefault();
   chrome.runtime.openOptionsPage();
 });
-
-if (el.openSidePanel) {
-  el.openSidePanel.addEventListener('click', function() {
-    chrome.windows.getCurrent(function(win) {
-      if (win && win.id != null) chrome.sidePanel.open({ windowId: win.id });
-    });
-  });
-}
-
-if (el.openFloating) {
-  el.openFloating.addEventListener('click', function() {
-    chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
-      if (!tabs || !tabs[0] || !tabs[0].id) return;
-      const tabId = tabs[0].id;
-      chrome.scripting.executeScript({ target: { tabId }, files: ['content.js'] }, function() {
-        if (chrome.runtime.lastError) {
-          console.warn(chrome.runtime.lastError);
-          return;
-        }
-        setTimeout(function() {
-          chrome.tabs.sendMessage(tabId, { type: 'T212_SHOW_FLOATING' });
-        }, 80);
-      });
-    });
-  });
-}
 
 load();

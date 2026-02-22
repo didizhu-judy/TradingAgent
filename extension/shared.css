@@ -1,0 +1,185 @@
+/* Trading 212 行情助手 - 共用科技感深色主题 */
+:root {
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-card: #21262d;
+  --border: #30363d;
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --accent: #58a6ff;
+  --accent-dim: #388bfd;
+  --green: #3fb950;
+  --red: #f85149;
+  --radius: 10px;
+  --radius-sm: 6px;
+  --font-sans: 'Inter', 'Segoe UI', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', monospace;
+  --shadow: 0 4px 12px rgba(0,0,0,0.35);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.app-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 14px;
+  background: linear-gradient(135deg, var(--bg-secondary) 0%, var(--bg-card) 100%);
+  border-bottom: 1px solid var(--border);
+}
+
+.app-header h1 {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  background: linear-gradient(90deg, var(--text-primary), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.btn-primary {
+  padding: 8px 14px;
+  background: linear-gradient(180deg, var(--accent) 0%, var(--accent-dim) 100%);
+  color: #fff;
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: filter 0.15s, transform 0.1s;
+}
+
+.btn-primary:hover { filter: brightness(1.1); }
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-secondary {
+  padding: 6px 10px;
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-size: 11px;
+  cursor: pointer;
+  transition: color 0.15s, border-color 0.15s;
+}
+
+.btn-secondary:hover { color: var(--accent); border-color: var(--accent); }
+
+.header-actions { display: flex; align-items: center; gap: 6px; }
+
+.state-view {
+  padding: 20px 14px;
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.state-view.hidden { display: none; }
+
+.state-view.loading-dots::after {
+  content: '';
+  animation: loading-dots 1s steps(4, end) infinite;
+}
+
+@keyframes loading-dots {
+  0%, 20% { content: ''; }
+  40% { content: '.'; }
+  60% { content: '..'; }
+  80%, 100% { content: '...'; }
+}
+
+.state-view a {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.state-view a:hover { text-decoration: underline; }
+
+.state-error { color: var(--red); }
+
+/* 卡片区块 */
+.section {
+  margin: 14px;
+  padding: 14px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+}
+
+.section-title {
+  margin: 0 0 12px 0;
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-secondary);
+}
+
+/* 账户总览行 */
+.summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.summary-row:last-child { border-bottom: none; }
+
+.summary-row .label { color: var(--text-secondary); }
+
+.summary-row .value {
+  font-family: var(--font-mono);
+  font-weight: 500;
+}
+
+.summary-row .value.positive { color: var(--green); }
+.summary-row .value.negative { color: var(--red); }
+
+/* 持仓列表 */
+.positions-list {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--bg-primary);
+}
+
+.position-card {
+  padding: 12px 14px;
+  border-bottom: 1px solid var(--border);
+  transition: background 0.15s;
+}
+
+.position-card:last-child { border-bottom: none; }
+.position-card:hover { background: rgba(255,255,255,0.02); }
+
+.position-name { font-weight: 600; }
+.position-ticker { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+
+.position-row {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.position-pl { font-weight: 600; font-family: var(--font-mono); }
+.position-pl.positive { color: var(--green); }
+.position-pl.negative { color: var(--red); }
+
+.hint-text { font-size: 11px; color: var(--text-secondary); margin-top: 8px; }
+
+.content-wrap.hidden { display: none; }

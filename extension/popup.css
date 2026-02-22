@@ -1,28 +1,5 @@
-* { box-sizing: border-box; }
-body { width: 360px; max-height: 520px; margin: 0; font-family: system-ui, sans-serif; font-size: 13px; overflow: auto; }
-#app { padding: 12px; }
-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
-h1 { margin: 0; font-size: 16px; }
-#refresh { padding: 6px 12px; background: #1a73e8; color: #fff; border: none; border-radius: 6px; cursor: pointer; font-size: 12px; }
-#refresh:hover { background: #1557b0; }
-#refresh:disabled { opacity: 0.6; cursor: not-allowed; }
-.state { padding: 12px; color: #666; }
-.state.hidden { display: none; }
-#state-error { color: #c5221f; }
-a { color: #1a73e8; }
-.summary, .positions { margin-top: 16px; }
-.summary h2, .positions h2 { margin: 0 0 8px 0; font-size: 14px; }
-.summary-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #eee; }
-.summary-row .label { color: #666; }
-.summary-row .value.positive { color: #137333; }
-.summary-row .value.negative { color: #c5221f; }
-#positionsList { border: 1px solid #eee; border-radius: 8px; overflow: hidden; }
-.position { padding: 10px 12px; border-bottom: 1px solid #eee; }
-.position:last-child { border-bottom: none; }
-.position .name { font-weight: 500; }
-.position .ticker { font-size: 11px; color: #666; }
-.position .row { display: flex; justify-content: space-between; margin-top: 4px; font-size: 12px; }
-.position .pl.positive { color: #137333; }
-.position .pl.negative { color: #c5221f; }
-#content.hidden { display: none; }
-.hint { font-size: 11px; color: #888; margin-top: 4px; }
+@import "shared.css";
+
+body { width: 380px; max-height: 560px; overflow: auto; }
+
+.app-inner { padding: 0 0 12px 0; }

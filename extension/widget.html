@@ -3,21 +3,17 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Trading 212 行情</title>
+  <title>T212</title>
   <link rel="stylesheet" href="shared.css">
-  <link rel="stylesheet" href="popup.css">
+  <link rel="stylesheet" href="sidepanel.css">
 </head>
 <body>
   <div id="app" class="app">
     <header class="app-header">
       <h1>T212 行情</h1>
-      <div class="header-actions">
-        <button id="openSidePanel" type="button" class="btn-secondary" title="在浏览器右侧打开">侧边栏</button>
-        <button id="openFloating" type="button" class="btn-secondary" title="在当前页面打开悬浮窗">悬浮窗</button>
-        <button id="refresh" type="button" class="btn-primary">刷新</button>
-      </div>
+      <button id="refresh" type="button" class="btn-primary">刷新</button>
     </header>
-    <div id="state-empty" class="state-view">请在 <a href="#" id="openOptions">选项</a> 中配置 API Key 和 API Secret</div>
+    <div id="state-empty" class="state-view">请在扩展选项中配置 API</div>
     <div id="state-loading" class="state-view hidden">加载中…</div>
     <div id="state-error" class="state-view state-error hidden"></div>
     <div id="content" class="content-wrap hidden app-inner">
@@ -32,6 +28,6 @@
       </section>
     </div>
   </div>
-  <script type="module" src="popup.js"></script>
+  <script type="module" src="panel.js"></script>
 </body>
 </html>

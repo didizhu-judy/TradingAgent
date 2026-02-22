@@ -66,6 +66,27 @@ TradingAgent/
 - 持仓：GET `/api/v0/equity/positions`。返回数组，每项含 instrument（name、ticker）、quantity、currentPrice、averagePricePaid、walletImpact（currentValue、totalCost、unrealizedProfitLoss）等。
 - 认证：Header `Authorization: Basic base64(apiKey:apiSecret)`。
 
+## 6. UI 改版（现代科技感）
+
+- **风格**：深色主题、科技感；优于 T212 官方界面的现代审美。
+- **实现**：共用样式表（如 `shared.css`）定义 CSS 变量：深色背景、青色/蓝绿强调色、等宽/现代无衬线字体、卡片圆角与细边框、盈亏用绿/红区分。
+- **适用**：popup、sidepanel、widget 共用同一套样式与结构，保证一致。
+
+## 7. 右侧嵌入（Chrome Side Panel）
+
+- **manifest**：添加 `side_panel.default_path`（如 `sidepanel.html`）；需 `sidePanel` 权限（如已声明）。
+- **sidepanel.html**：与 popup 相同的账户总览 + 持仓列表 + 刷新；引用 shared 样式与同一套数据逻辑；可独立 sidepanel.js 或复用 popup 逻辑。
+- **打开方式**：用户可通过右键扩展图标选择「打开侧边栏」或扩展内提供入口。
+
+## 8. 页面内悬浮窗
+
+- **形态**：在任意网页注入一个可拖拽的悬浮面板，内容与 popup/sidepanel 一致。
+- **实现**：content script 在页面上插入容器，内嵌 iframe，src 为扩展内的 `widget.html`（加入 `web_accessible_resources`）；iframe 内加载 widget 页面，使用同一 API 与 shared 样式；容器带拖拽条（或整窗可拖）、可收起/展开、可关闭。
+- **入口**：popup 或扩展图标菜单中提供「在页面打开悬浮窗」按钮，通过 message 通知 content script 显示/隐藏面板。
+
 ## 验收
 
 - 在 Chrome 加载 extension 目录后，打开选项页保存 API Key/Secret 和环境；点击扩展图标弹出 popup，显示账户总览与持仓列表；刷新按钮可用；未配置时提示明确；README 具备安装与配置步骤。
+- 改版后：popup/sidepanel/widget 均为现代科技感深色 UI。
+- 侧边栏：可通过浏览器侧边栏打开并显示同一内容。
+- 悬浮窗：在任意页可打开可拖拽的嵌入式面板，内容一致。
