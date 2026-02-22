@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trading 212 行情助手 - 选项</title>
+  <style>
+    body { font-family: system-ui, sans-serif; padding: 16px; max-width: 480px; }
+    label { display: block; margin-top: 12px; font-weight: 500; }
+    input, select { width: 100%; padding: 8px; margin-top: 4px; box-sizing: border-box; }
+    input[type="checkbox"] { width: auto; }
+    button { margin-top: 16px; padding: 10px 20px; background: #1a73e8; color: #fff; border: none; border-radius: 6px; cursor: pointer; }
+    button:hover { background: #1557b0; }
+    .hint { font-size: 12px; color: #666; margin-top: 4px; }
+    .row { display: flex; align-items: center; gap: 8px; }
+  </style>
+</head>
+<body>
+  <h1>Trading 212 行情助手</h1>
+  <p class="hint">配置后数据仅存于本机，不会上传。</p>
+  <label>API Key</label>
+  <input type="text" id="apiKey" placeholder="在 Trading 212 设置中 API (Beta) 生成" autocomplete="off">
+  <label>API Secret</label>
+  <input type="password" id="apiSecret" placeholder="生成时只显示一次，请妥善保存" autocomplete="off">
+  <label>环境</label>
+  <select id="environment">
+    <option value="demo">Demo（模拟盘）</option>
+    <option value="live">Live（实盘）</option>
+  </select>
+  <div class="row" style="margin-top: 16px;">
+    <input type="checkbox" id="useProxy">
+    <label for="useProxy" style="margin-top:0;">使用本地代理（遇 CORS 时勾选）</label>
+  </div>
+  <label>代理地址</label>
+  <input type="text" id="proxyUrl" value="http://127.0.0.1:8765">
+  <button id="save">保存</button>
+  <span id="status" style="margin-left:8px;font-size:14px;color:green;"></span>
+  <script src="options.js"></script>
+</body>
+</html>

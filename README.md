@@ -1,0 +1,70 @@
+# Trading 212 行情助手 (Chrome Extension)
+
+在浏览器中快速查看 Trading 212 持仓、股价与收益，无需打开 App。仅只读，不下单。
+
+## 获取 API Key
+
+1. 打开 Trading 212 **App** 或 **网页**，进入 **设置 (Settings)** → **API (Beta)**。
+2. 接受风险提示后点击 **Generate API key**。
+3. 建议只勾选**只读**权限（查看账户、持仓、历史）。
+4. 生成后会得到 **API Key** 和 **API Secret**（Secret 只显示一次，请保存好）。
+
+官方说明：<https://helpcentre.trading212.com/hc/en-us/articles/14584770928157-Trading-212-API-key>
+
+仅 **Invest** 和 **Stocks ISA** 账户支持 API。
+
+## 安装扩展（本地文件夹，无需上架商店）
+
+扩展就是你现在电脑上的**本地文件夹**，Chrome 支持直接加载这种「未打包」扩展：
+
+1. 打开 Chrome，地址栏输入并访问：`chrome://extensions/`。
+2. 打开右上角 **开发者模式** 开关。
+3. 点击 **「加载已解压的扩展程序」**，会弹出**选择文件夹**的窗口。
+4. 在窗口里找到你这个项目所在位置（例如 `TradingAgent`），点进去，选中里面的 **`extension`** 文件夹（即包含 `manifest.json` 的那个文件夹），点「选择文件夹」或「打开」。
+5. 加载成功后，扩展会出现在列表中；点击扩展图标可打开弹窗，或右键图标 → 选项进行配置。
+
+也就是说：选的就是你本机路径下的 `TradingAgent/extension` 这个文件夹，不是从网上或商店选。
+
+## 配置
+
+1. 在扩展 **选项** 页填写：
+   - **API Key** / **API Secret**（在 Trading 212 中生成）
+   - **环境**：Demo（模拟）或 Live（实盘）
+2. 若浏览器直连 Trading 212 出现 CORS 报错，可勾选 **使用本地代理**，并填写代理地址（默认 `http://127.0.0.1:8765`），然后启动下方本地代理。
+
+## 本地代理（可选，用于解决 CORS）
+
+当扩展直连失败时，可在本机运行代理，由代理请求 Trading 212，扩展只请求本机。
+
+1. 进入 `proxy` 目录，安装依赖并启动：
+
+   ```bash
+   cd proxy
+   pip install -r requirements.txt
+   export API_KEY="你的API Key"
+   export API_SECRET="你的API Secret"
+   export ENVIRONMENT=demo   # 或 live
+   python app.py
+   ```
+
+2. 代理默认监听 `http://127.0.0.1:8765`。
+3. 在扩展选项中勾选 **使用本地代理**，代理地址填 `http://127.0.0.1:8765`，保存后刷新弹窗。
+
+## 使用
+
+点击浏览器右上角扩展图标，弹出小窗可查看：
+
+- **账户总览**：总资产、可用现金、投资市值、已实现/未实现盈亏
+- **持仓列表**：名称、代码、数量、现价、成本、未实现盈亏
+
+点击 **刷新** 可重新拉取数据。
+
+## 项目结构
+
+- `extension/` — Chrome 扩展（Manifest V3）
+- `proxy/` — 可选本地代理（Python Flask）
+- `PLAN.md` / `可行性说明.md` — 方案与可行性说明
+
+## 安全说明
+
+API Key 与 Secret 仅保存在本机（扩展的 storage 或代理的环境变量），不会上传到任何第三方；数据仅在「你的电脑 ↔ Trading 212」之间传输。

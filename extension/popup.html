@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Trading 212 行情</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div id="app">
+    <header>
+      <h1>Trading 212 行情</h1>
+      <button id="refresh" type="button">刷新</button>
+    </header>
+    <div id="state-empty" class="state">请在 <a href="#" id="openOptions">选项</a> 中配置 API Key 和 API Secret</div>
+    <div id="state-loading" class="state hidden">加载中…</div>
+    <div id="state-error" class="state hidden"></div>
+    <div id="content" class="hidden">
+      <section class="summary">
+        <h2>账户总览</h2>
+        <div id="summaryRows"></div>
+      </section>
+      <section class="positions">
+        <h2>持仓</h2>
+        <div id="positionsList"></div>
+        <p class="hint">无持仓时此处为空</p>
+      </section>
+    </div>
+  </div>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
