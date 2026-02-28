@@ -46,6 +46,7 @@ const el = {
   btnSkinMenu: document.getElementById('btnSkinMenu'),
   skinMenu: document.getElementById('skinMenu'),
   codeWorkbenchMenu: document.getElementById('codeWorkbenchMenu'),
+  headerActions: document.querySelector('.header-actions'),
   workSkinTabs: document.getElementById('workSkinTabs'),
   workSkinRibbon: document.getElementById('workSkinRibbon'),
   soulCursor: document.getElementById('soulCursor'),
@@ -519,6 +520,7 @@ function renderWorkSkinChrome() {
   if (!config) {
     el.workSkinTabs.innerHTML = '';
     el.workSkinRibbon.innerHTML = '';
+    placeHeaderViewSwitch();
     return;
   }
 
@@ -591,12 +593,29 @@ function renderWorkSkinChrome() {
     ribbonFrag.appendChild(section);
   });
   el.workSkinRibbon.appendChild(ribbonFrag);
+  placeHeaderViewSwitch();
 }
 
 function renderHeaderChrome() {
   renderCodeWorkbenchMenu();
   renderWorkSkinChrome();
   updateSoulCursor();
+}
+
+function placeHeaderViewSwitch() {
+  if (!el.viewSwitchTabs) return;
+  const skin = normalizeWorkSkin(state.workSkin);
+  if (skin !== 'code' && el.workSkinRibbon) {
+    if (el.viewSwitchTabs.parentElement !== el.workSkinRibbon) {
+      el.workSkinRibbon.prepend(el.viewSwitchTabs);
+    }
+    el.viewSwitchTabs.classList.add('in-ribbon');
+    return;
+  }
+  if (el.headerActions && el.viewSwitchTabs.parentElement !== el.headerActions) {
+    el.headerActions.appendChild(el.viewSwitchTabs);
+  }
+  el.viewSwitchTabs.classList.remove('in-ribbon');
 }
 
 function setActiveWorkSkinTab(tabId) {
