@@ -327,6 +327,7 @@ const CODE_TAB_BY_VIEW = {
 };
 
 const SHEET_RAIL_LINES = Array.from({ length: 60 }, (_, i) => String(i + 1));
+const WATCHLIST_SNAPSHOT_KEY = 't212_watchlist_snapshot';
 
 const MAIL_FOLDERS = [
   label('收件箱', 'Inbox'),
@@ -528,6 +529,58 @@ function mergeWatchlistQuotesFromPrevious(nextList, previousList) {
     if (out.changePct == null && oldItem.changePct != null) out.changePct = oldItem.changePct;
     return out;
   });
+}
+
+function hasWatchlistQuote(item) {
+  if (!item || typeof item !== 'object') return false;
+  const price = Number(item.price);
+  const change = Number(item.change);
+  const changePct = Number(item.changePct);
+  return Number.isFinite(price) || Number.isFinite(change) || Number.isFinite(changePct);
+}
+
+async function getWatchlistSnapshot() {
+  try {
+    const r = await chrome.storage.local.get(WATCHLIST_SNAPSHOT_KEY);
+    const list = Array.isArray(r[WATCHLIST_SNAPSHOT_KEY]) ? r[WATCHLIST_SNAPSHOT_KEY] : [];
+    return list
+      .map(item => {
+        const ticker = tickerKey(item && (item.ticker || item.symbol));
+        if (!ticker) return null;
+        return {
+          ticker,
+          name: item && item.name ? String(item.name) : ticker,
+          price: item && item.price != null ? Number(item.price) : null,
+          change: item && item.change != null ? Number(item.change) : null,
+          changePct: item && item.changePct != null ? Number(item.changePct) : null
+        };
+      })
+      .filter(item => item && item.ticker);
+  } catch (_) {
+    return [];
+  }
+}
+
+async function setWatchlistSnapshot(items) {
+  const list = Array.isArray(items) ? items : [];
+  if (!list.length) return;
+  try {
+    const cleaned = list
+      .map(item => {
+        const ticker = tickerKey(item && (item.ticker || item.symbol));
+        if (!ticker) return null;
+        return {
+          ticker,
+          name: item && item.name ? String(item.name) : ticker,
+          price: item && item.price != null ? Number(item.price) : null,
+          change: item && item.change != null ? Number(item.change) : null,
+          changePct: item && item.changePct != null ? Number(item.changePct) : null
+        };
+      })
+      .filter(item => item && item.ticker);
+    if (!cleaned.length) return;
+    await chrome.storage.local.set({ [WATCHLIST_SNAPSHOT_KEY]: cleaned.slice(0, 300) });
+  } catch (_) {}
 }
 
 function renderWorkSkinChrome() {
@@ -1706,7 +1759,9 @@ async function refreshWatchlistIfNeeded(config, forceRefresh, options = {}) {
   if (!forceRefresh && state.watchlistLastUpdated && (now - state.watchlistLastUpdated < WATCHLIST_REFRESH_MS)) return;
   if (watchlistRefreshPromise) return watchlistRefreshPromise;
   const { quotesOnly = false } = options;
-  const previousWatchlist = Array.isArray(state.watchlist) ? state.watchlist.map(item => ({ ...item })) : [];
+  const stateWatchlist = Array.isArray(state.watchlist) ? state.watchlist.map(item => ({ ...item })) : [];
+  const snapshotWatchlist = await getWatchlistSnapshot();
+  const previousWatchlist = mergeWatchlistItems(stateWatchlist, snapshotWatchlist);
   state.watchlistLastUpdated = now;
 
   watchlistRefreshPromise = (async () => {
@@ -1720,8 +1775,12 @@ async function refreshWatchlistIfNeeded(config, forceRefresh, options = {}) {
       } catch (_) {
         state.watchlist = seedCopy;
       }
+      if (!Array.isArray(state.watchlist) || state.watchlist.length === 0) {
+        state.watchlist = previousWatchlist.map(item => ({ ...item }));
+      }
       state.watchlist = mergeWatchlistQuotesFromPrevious(state.watchlist, previousWatchlist);
       state.watchlistError = '';
+      if (state.watchlist.some(hasWatchlistQuote)) await setWatchlistSnapshot(state.watchlist);
       return;
     }
 
@@ -1747,8 +1806,14 @@ async function refreshWatchlistIfNeeded(config, forceRefresh, options = {}) {
     } catch (_) {
       state.watchlist = watchlistItems;
     }
+    if (!Array.isArray(state.watchlist) || state.watchlist.length === 0) {
+      state.watchlist = previousWatchlist.map(item => ({ ...item }));
+    } else {
+      state.watchlist = mergeWatchlistItems(state.watchlist, previousWatchlist);
+    }
     state.watchlist = mergeWatchlistQuotesFromPrevious(state.watchlist, previousWatchlist);
     state.watchlistError = '';
+    if (state.watchlist.some(hasWatchlistQuote)) await setWatchlistSnapshot(state.watchlist);
   })();
 
   try {

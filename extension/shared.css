@@ -855,6 +855,24 @@ html[data-theme="dark"] .position-card:hover { background: rgba(255,255,255,0.06
 .analysis-view { display: none; flex-direction: column; padding: 0; }
 .analysis-view.active { display: flex; }
 .analysis-view .editor-content { padding: 10px 14px; }
+.analysis-modules {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+.analysis-module {
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-secondary);
+  padding: 10px 10px 12px;
+}
+.analysis-module-title {
+  margin: 0 0 10px 0;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.3;
+}
 .analysis-primary-hint { font-size: 12px; color: var(--text-primary); margin: 0 0 12px 0; line-height: 1.5; }
 .analysis-prompt-wrap { margin: 0 0 12px 0; }
 .analysis-prompt-input {
@@ -894,8 +912,8 @@ html[data-theme="dark"] .position-card:hover { background: rgba(255,255,255,0.06
 .analysis-primary { margin-bottom: 16px; }
 .analysis-primary .analysis-options { margin: 0 0 10px 0; }
 .analysis-btn-primary { margin-top: 4px; }
-.analysis-secondary-divider { font-size: 11px; color: var(--text-muted); margin: 0 0 10px 0; text-align: center; }
-.analysis-secondary { margin-bottom: 12px; }
+.analysis-secondary-divider { font-size: 11px; color: var(--text-muted); margin: 0 0 10px 0; text-align: left; }
+.analysis-secondary { margin-bottom: 6px; }
 .analysis-secondary .analysis-options { margin: 0 0 8px 0; }
 .analysis-hint { font-size: 11px; color: var(--text-secondary); margin: 0 0 12px 0; line-height: 1.5; }
 .analysis-options { margin: 12px 0; display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; }
@@ -904,7 +922,7 @@ html[data-theme="dark"] .position-card:hover { background: rgba(255,255,255,0.06
 .analysis-status { font-size: 11px; color: var(--positive); margin-left: 8px; }
 .analysis-status.hidden { display: none; }
 .analysis-result {
-  margin-top: 12px; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius);
+  margin-top: 10px; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius);
   font-size: 12px; line-height: 1.6; color: var(--text-primary); white-space: pre-wrap; word-break: break-word;
 }
 .analysis-result.hidden { display: none; }
@@ -976,6 +994,10 @@ html[data-theme="dark"] .position-card:hover { background: rgba(255,255,255,0.06
     min-height: 22px;
     padding: 2px 8px;
     font-size: 10px;
+  }
+
+  .analysis-module {
+    padding: 8px 8px 10px;
   }
 }
 
