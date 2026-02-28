@@ -181,6 +181,10 @@ html[data-work-skin="bi"][data-theme="dark"] {
 }
 
 /* Code desk (VSCode-like top workbench) */
+html[data-work-skin="code"] {
+  --code-font: Consolas, "Cascadia Mono", "SF Mono", Menlo, Monaco, "Courier New", monospace;
+}
+
 html[data-work-skin="code"] .app-header {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -229,19 +233,21 @@ html[data-work-skin="code"][data-theme="light"] .code-workbench-item:hover {
 }
 
 html[data-work-skin="code"][data-theme="light"] .app-header {
-  border-bottom-color: #cfc7e8;
-  background: linear-gradient(180deg, #ebe8fa 0 22px, #f6f4fe 22px 100%);
+  border-bottom-color: #d5d5d5;
+  background: linear-gradient(180deg, #efeaff 0 22px, #f7f7f7 22px 100%);
 }
 
 html[data-work-skin="code"][data-theme="light"] .app-header h1 {
-  color: #312a52;
+  color: #333333;
+  font-family: var(--code-font);
 }
 
 html[data-work-skin="code"][data-theme="light"] .header-actions > button,
 html[data-work-skin="code"][data-theme="light"] .header-actions > .skin-menu-wrap > button {
-  border-color: #c9c3df;
-  color: #4e466f;
-  background: #f5f3fd;
+  border-color: #cfcfcf;
+  color: #444444;
+  background: #f3f3f3;
+  font-family: var(--code-font);
 }
 
 html[data-work-skin="code"] .view-main .editor-content {
@@ -303,7 +309,7 @@ html[data-work-skin="code"] .work-skin-tab {
   border-bottom-color: transparent;
   border-radius: 4px 4px 0 0;
   color: #aeb3c4;
-  font: 500 10.5px/1.1 var(--font-ui);
+  font: 500 10.5px/1.1 var(--code-font);
   background: transparent;
 }
 
@@ -349,25 +355,25 @@ html[data-work-skin="code"] .work-skin-tab.active .work-skin-tab-close {
 }
 
 html[data-work-skin="code"][data-theme="light"] .work-skin-tabs {
-  border-color: #cbc7df;
-  border-bottom-color: #bbb6d4;
-  background: #efecfb;
+  border-color: #d7d7d7;
+  border-bottom-color: #cccccc;
+  background: #f3f3f3;
 }
 
 html[data-work-skin="code"][data-theme="light"] .work-skin-tab {
-  color: #5d537f;
+  color: #444444;
 }
 
 html[data-work-skin="code"][data-theme="light"] .work-skin-tab:hover {
-  color: #342d58;
-  background: rgba(88, 73, 143, 0.1);
+  color: #111111;
+  background: #e9e9e9;
 }
 
 html[data-work-skin="code"][data-theme="light"] .work-skin-tab.active {
-  color: #2e2851;
-  border-color: #bfb8da;
-  border-bottom-color: #f6f4fe;
-  background: #f8f7ff;
+  color: #222222;
+  border-color: #d0d0d0;
+  border-bottom-color: #ffffff;
+  background: #ffffff;
 }
 
 html[data-work-skin="code"] .header-actions #btnWatchlist,
@@ -384,23 +390,26 @@ html[data-work-skin="code"] .code-line-rail {
   border-right: 1px solid #353849;
   color: #6a6f84;
   background: #1f1f2b;
-  font: 500 10.5px/var(--code-line-height) var(--font-ui);
+  font: 500 10.5px/var(--code-line-height) var(--code-font);
   text-align: right;
   white-space: pre;
   overflow: hidden;
 }
 
 html[data-work-skin="code"][data-theme="light"] .code-line-rail {
-  border-right-color: #c8c4dd;
-  color: #8882a5;
-  background: #f6f4fe;
+  border-right-color: #e3e3e3;
+  color: #858585;
+  background: #f3f3f3;
 }
 
 html[data-work-skin="code"] .view-main .editor-content {
   --code-line-height: 22px;
   padding-top: 6px;
+  background: #ffffff;
+  color: #24292e;
   font-size: 12px;
   line-height: var(--code-line-height);
+  font-family: var(--code-font);
   font-variant-numeric: tabular-nums;
 }
 
@@ -414,14 +423,23 @@ html[data-work-skin="code"] .view-main .section-title {
   margin: 0;
   height: var(--code-line-height);
   line-height: var(--code-line-height);
-  font-size: 10.5px;
-  letter-spacing: 0.06em;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: none;
+  letter-spacing: 0;
+  color: #c62828;
+}
+
+html[data-work-skin="code"] .view-main .section-title::before {
+  content: '## ';
+  color: #6f42c1;
+  font-weight: 700;
 }
 
 html[data-work-skin="code"] .view-main .summary-row {
   min-height: var(--code-line-height);
   padding: 0;
-  border-bottom: 1px solid rgba(90, 95, 124, 0.35);
+  border-bottom: 1px solid #ececec;
 }
 
 html[data-work-skin="code"] .view-main .summary-row .label,
@@ -430,18 +448,30 @@ html[data-work-skin="code"] .view-main .summary-row .value {
   line-height: var(--code-line-height);
 }
 
+html[data-work-skin="code"] .view-main .summary-row .label {
+  color: #005cc5;
+}
+
+html[data-work-skin="code"] .view-main .summary-row .label::after {
+  content: ':';
+  color: #6a737d;
+}
+
 html[data-work-skin="code"] .view-main .positions-toolbar {
   margin: var(--code-line-height) 0 0;
   min-height: var(--code-line-height);
   padding: 0;
-  border-top: 1px solid rgba(90, 95, 124, 0.35);
-  border-bottom: 1px solid rgba(90, 95, 124, 0.35);
+  border-top: 1px solid #ececec;
+  border-bottom: 1px solid #ececec;
 }
 
 html[data-work-skin="code"] .view-main .positions-toolbar select {
   height: 20px;
   padding: 0 7px;
   font-size: 11px;
+  font-family: var(--code-font);
+  border-color: #d8d8d8;
+  background: #f8f8f8;
 }
 
 html[data-work-skin="code"] .view-main .positions-list {
@@ -451,7 +481,7 @@ html[data-work-skin="code"] .view-main .positions-list {
 
 html[data-work-skin="code"] .view-main .position-card {
   padding: 0;
-  border-bottom: 1px solid rgba(90, 95, 124, 0.35);
+  border-bottom: 1px solid #ececec;
   line-height: var(--code-line-height);
 }
 
@@ -463,9 +493,44 @@ html[data-work-skin="code"] .view-main .position-row {
   font-size: 11px;
 }
 
+html[data-work-skin="code"] .view-main .position-name {
+  color: #24292e;
+  font-weight: 600;
+}
+
+html[data-work-skin="code"] .view-main .position-ticker {
+  color: #6a737d;
+}
+
 html[data-work-skin="code"] .view-main .position-pl {
   line-height: var(--code-line-height);
   font-size: 11px;
+}
+
+html[data-work-skin="code"] .watchlist-view .editor-content,
+html[data-work-skin="code"] .analysis-view .editor-content {
+  background: #ffffff;
+  color: #24292e;
+  font-family: var(--code-font);
+}
+
+html[data-work-skin="code"] .watchlist-view .section,
+html[data-work-skin="code"] .analysis-view .section {
+  border-top: 1px solid #ececec;
+}
+
+html[data-work-skin="code"] .watchlist-view .section-title,
+html[data-work-skin="code"] .analysis-view .section-title {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 12px;
+  color: #c62828;
+}
+
+html[data-work-skin="code"] .watchlist-view .section-title::before,
+html[data-work-skin="code"] .analysis-view .section-title::before {
+  content: '## ';
+  color: #6f42c1;
 }
 
 @media (max-width: 420px) {
