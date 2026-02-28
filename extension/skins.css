@@ -432,7 +432,7 @@ html[data-work-skin="code"] .view-main .section-title {
 
 html[data-work-skin="code"] .view-main .section-title::before {
   content: '## ';
-  color: #6f42c1;
+  color: currentColor;
   font-weight: 700;
 }
 
@@ -530,7 +530,7 @@ html[data-work-skin="code"] .analysis-view .section-title {
 html[data-work-skin="code"] .watchlist-view .section-title::before,
 html[data-work-skin="code"] .analysis-view .section-title::before {
   content: '## ';
-  color: #6f42c1;
+  color: currentColor;
 }
 
 @media (max-width: 420px) {
