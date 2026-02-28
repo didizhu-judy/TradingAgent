@@ -512,6 +512,24 @@ function getResponsiveRibbonGroups(groups) {
   }));
 }
 
+function mergeWatchlistQuotesFromPrevious(nextList, previousList) {
+  const next = Array.isArray(nextList) ? nextList : [];
+  const prev = Array.isArray(previousList) ? previousList : [];
+  if (!next.length || !prev.length) return next;
+  const prevMap = new Map(prev.map(item => [tickerKey(item && (item.ticker || item.symbol)), item]));
+  return next.map(item => {
+    const key = tickerKey(item && (item.ticker || item.symbol));
+    if (!key) return item;
+    const oldItem = prevMap.get(key);
+    if (!oldItem) return item;
+    const out = { ...item };
+    if (out.price == null && oldItem.price != null) out.price = oldItem.price;
+    if (out.change == null && oldItem.change != null) out.change = oldItem.change;
+    if (out.changePct == null && oldItem.changePct != null) out.changePct = oldItem.changePct;
+    return out;
+  });
+}
+
 function renderWorkSkinChrome() {
   if (!el.workSkinTabs || !el.workSkinRibbon) return;
   const config = getWorkSkinChromeConfig();
@@ -556,7 +574,10 @@ function renderWorkSkinChrome() {
   });
   el.workSkinTabs.appendChild(tabsFrag);
 
-  const groupsRaw = config.ribbon[activeTabId] || config.ribbon[config.defaultTab] || [];
+  const skin = normalizeWorkSkin(state.workSkin);
+  const groupsRaw = skin === 'code'
+    ? (config.ribbon[activeTabId] || config.ribbon[config.defaultTab] || [])
+    : [];
   const groups = getResponsiveRibbonGroups(groupsRaw);
   el.workSkinRibbon.innerHTML = '';
   const ribbonFrag = document.createDocumentFragment();
@@ -622,6 +643,7 @@ function setActiveWorkSkinTab(tabId) {
   const config = getWorkSkinChromeConfig();
   if (!config || !config.tabs.some(tab => tab.id === tabId)) return;
   const skin = normalizeWorkSkin(state.workSkin);
+  if (skin !== 'code') return;
   const isSameTab = state.activeChromeTabBySkin[skin] === tabId;
   state.activeChromeTabBySkin[skin] = tabId;
   if (!isSameTab) renderWorkSkinChrome();
@@ -1684,6 +1706,7 @@ async function refreshWatchlistIfNeeded(config, forceRefresh, options = {}) {
   if (!forceRefresh && state.watchlistLastUpdated && (now - state.watchlistLastUpdated < WATCHLIST_REFRESH_MS)) return;
   if (watchlistRefreshPromise) return watchlistRefreshPromise;
   const { quotesOnly = false } = options;
+  const previousWatchlist = Array.isArray(state.watchlist) ? state.watchlist.map(item => ({ ...item })) : [];
   state.watchlistLastUpdated = now;
 
   watchlistRefreshPromise = (async () => {
@@ -1697,6 +1720,7 @@ async function refreshWatchlistIfNeeded(config, forceRefresh, options = {}) {
       } catch (_) {
         state.watchlist = seedCopy;
       }
+      state.watchlist = mergeWatchlistQuotesFromPrevious(state.watchlist, previousWatchlist);
       state.watchlistError = '';
       return;
     }
@@ -1723,6 +1747,7 @@ async function refreshWatchlistIfNeeded(config, forceRefresh, options = {}) {
     } catch (_) {
       state.watchlist = watchlistItems;
     }
+    state.watchlist = mergeWatchlistQuotesFromPrevious(state.watchlist, previousWatchlist);
     state.watchlistError = '';
   })();
 
