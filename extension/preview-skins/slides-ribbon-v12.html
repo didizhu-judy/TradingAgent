@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en" data-theme="light" data-work-skin="slides">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="../shared.css" />
+  <link rel="stylesheet" href="../skins.css" />
+  <style>
+    body { width: 670px; min-height: 480px; padding: 14px; background: #efeff3 !important; }
+    #app { min-height: 0; border: 1px solid #d8dee9; box-shadow: 0 4px 16px rgba(16, 26, 40, 0.12); }
+    .content-wrap { display: block !important; }
+    .editor-content { min-height: 280px; }
+  </style>
+</head>
+<body>
+  <div id="app" class="app">
+    <header class="app-header">
+      <div class="code-workbench-menu"></div>
+      <div class="work-skin-tabs" role="tablist">
+        <button class="work-skin-tab" data-tone="accent">File</button>
+        <button class="work-skin-tab active">Home</button>
+        <button class="work-skin-tab">Insert</button>
+        <button class="work-skin-tab">Design</button>
+        <button class="work-skin-tab">Transitions</button>
+        <button class="work-skin-tab">Animations</button>
+        <button class="work-skin-tab">View</button>
+      </div>
+      <div class="work-skin-ribbon" role="toolbar">
+        <section class="work-skin-group"><div class="work-skin-group-body"><span class="work-skin-group-lead">Paste</span><div class="work-skin-group-items"><span class="work-skin-group-chip">Cut</span><span class="work-skin-group-chip">Copy</span></div></div><span class="work-skin-group-title">Clipboard</span></section>
+        <section class="work-skin-group"><div class="work-skin-group-body"><span class="work-skin-group-lead">New Slide</span><div class="work-skin-group-items"><span class="work-skin-group-chip">Layout</span><span class="work-skin-group-chip">Reset</span></div></div><span class="work-skin-group-title">Slides</span></section>
+        <section class="work-skin-group"><div class="work-skin-group-body"><span class="work-skin-group-lead">Aptos 18</span><div class="work-skin-group-items"><span class="work-skin-group-chip">Bold</span><span class="work-skin-group-chip">Italic</span></div></div><span class="work-skin-group-title">Font</span></section>
+        <section class="work-skin-group"><div class="work-skin-group-body"><div class="work-skin-group-items"><span class="work-skin-group-chip">Bullets</span><span class="work-skin-group-chip">Center</span><span class="work-skin-group-chip">Spacing</span></div></div><span class="work-skin-group-title">Paragraph</span></section>
+      </div>
+      <h1>T212 Agent</h1>
+      <div class="header-actions">
+        <button class="theme-toggle" type="button"><span class="icon-moon">🌙</span></button>
+        <div class="skin-menu-wrap"><button type="button" class="secondary skin-trigger">Skin</button></div>
+        <button type="button" class="secondary">Watchlist</button>
+        <button type="button" class="secondary">Analysis</button>
+      </div>
+      <span class="soul-cursor" style="display:inline-block;left:94px;top:66px;color:#c94b31">|</span>
+    </header>
+    <div class="content-wrap app-inner">
+      <div class="view-panel active view-main">
+        <div class="editor-content">
+          <section class="section summary-section">
+            <h2 class="section-title">P&L Snapshot</h2>
+            <div class="summary-row"><span class="label">Unrealized P&L</span><span class="value negative">-228.81 GBP</span></div>
+            <div class="summary-row"><span class="label">Realized P&L</span><span class="value positive">213.12 GBP</span></div>
+          </section>
+          <div class="positions-toolbar"><span class="section-title">Positions Focus</span><select><option>By P&L</option></select></div>
+          <div class="positions-list"><div class="position-card"><div class="position-name">Nvidia</div><div class="position-row"><span class="label">Qty 8.2</span><span class="value">Cost 278.44</span></div></div></div>
+        </div>
+        <div class="status-bar"><span class="status-left">Last updated 17:58:10 · 5 s until refresh</span><span class="status-right"><a href="#">Open in Side Panel</a><a href="#">Settings</a></span></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

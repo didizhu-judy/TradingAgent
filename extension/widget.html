@@ -1,31 +1,166 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="zh-CN" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>T212</title>
+  <title>T212 Agent</title>
   <link rel="stylesheet" href="shared.css">
+  <link rel="stylesheet" href="skins.css">
   <link rel="stylesheet" href="sidepanel.css">
 </head>
 <body>
   <div id="app" class="app">
     <header class="app-header">
-      <h1>T212 行情</h1>
-      <button id="refresh" type="button" class="btn-primary">刷新</button>
+      <div id="codeWorkbenchMenu" class="code-workbench-menu" role="toolbar" aria-label="Code menu"></div>
+      <div id="workSkinTabs" class="work-skin-tabs" role="tablist" aria-label="Work skin tabs"></div>
+      <div id="workSkinRibbon" class="work-skin-ribbon" role="toolbar" aria-label="Work skin ribbon"></div>
+      <h1 data-i18n="title">T212 Agent</h1>
+      <div class="header-actions">
+        <button id="themeToggle" type="button" class="theme-toggle" aria-label="Toggle theme" title="夜间模式"><span class="icon-sun" aria-hidden="true">☀</span><span class="icon-moon" aria-hidden="true">🌙</span></button>
+        <div class="skin-menu-wrap">
+          <button id="btnSkinMenu" type="button" class="secondary skin-trigger" data-i18n="skin">皮肤</button>
+          <div id="skinMenu" class="skin-menu hidden" role="menu" aria-label="Work skins"></div>
+        </div>
+        <div id="viewSwitchTabs" class="header-view-switch" role="tablist" aria-label="View switch tabs">
+          <button id="btnOverview" type="button" class="secondary view-switch-btn active" data-view-switch="main" data-i18n="tab_overview">总览</button>
+          <button id="btnWatchlist" type="button" class="secondary view-switch-btn" data-view-switch="watchlist" data-i18n="watchlist">自选</button>
+          <button id="btnAnalysis" type="button" class="secondary view-switch-btn" data-view-switch="analysis" data-i18n="analysis">分析</button>
+        </div>
+      </div>
+      <span id="soulCursor" class="soul-cursor" aria-hidden="true">|</span>
     </header>
-    <div id="state-empty" class="state-view">请在扩展选项中配置 API</div>
-    <div id="state-loading" class="state-view hidden">加载中…</div>
-    <div id="state-error" class="state-view state-error hidden"></div>
+    <div id="state-empty" class="state-view state-empty-guide">
+      <div><span data-i18n="empty_hint">请在</span> <a href="#" id="openOptions" data-i18n="empty_options">选项</a> <span data-i18n="empty_suffix">中配置 API Key 和 API Secret</span></div>
+      <div class="first-use-guide">
+        <div class="guide-title" data-i18n="guide_title">首次使用指引</div>
+        <ol class="guide-list">
+          <li data-i18n="guide_step_api">进入设置页 API 区域，填写 Trading 212 的 API Key / API Secret 并保存。</li>
+          <li data-i18n="guide_step_skin">在顶部点击「皮肤」可切换职业场景模板（代码台/文档台/表格台等）。</li>
+          <li data-i18n="guide_step_sidebar">在总览页右下角点击 Open in sidebar，可固定在侧边栏查看实时数据。</li>
+          <li data-i18n="guide_step_watchlist">打开 Watchlist 页面，可搜索股票并加入自选；列表会自动刷新价格。</li>
+        </ol>
+      </div>
+    </div>
+    <div id="state-loading" class="state-view hidden" data-i18n="loading">加载中…</div>
+    <div id="state-error" class="state-view state-error hidden"><span id="errorMessage"></span><button type="button" id="retryBtn" class="primary" style="margin-top:8px;" data-i18n="retry">重试</button></div>
     <div id="content" class="content-wrap hidden app-inner">
-      <section class="section summary-section">
-        <h2 class="section-title">账户总览</h2>
-        <div id="summaryRows"></div>
-      </section>
-      <section class="section positions-section">
-        <h2 class="section-title">持仓</h2>
-        <div id="positionsList" class="positions-list"></div>
-        <p class="hint-text">无持仓时此处为空</p>
-      </section>
+      <div id="view-main" class="view-panel active view-main">
+        <div class="editor-content">
+          <section class="section summary-section">
+            <h2 class="section-title" data-i18n="overview_title">账户总览</h2>
+            <div id="summaryRows"></div>
+          </section>
+          <section class="section">
+            <h2 class="section-title" data-i18n="cash_title">现金</h2>
+            <div id="cashRows"></div>
+          </section>
+          <div class="positions-toolbar">
+            <span class="section-title" data-i18n="positions_title">持仓</span>
+            <select id="positionsSort">
+              <option value="value" data-i18n="sort_value">按市值</option>
+              <option value="pl" data-i18n="sort_pl">按盈亏</option>
+              <option value="name" data-i18n="sort_name">按名称</option>
+            </select>
+          </div>
+          <div id="positionsList" class="positions-list"></div>
+        </div>
+        <div class="status-bar">
+          <span class="status-left"><span id="lastUpdatedStatus"></span></span>
+          <span class="status-right">
+            <a href="#" id="statusBarSidePanel" data-i18n="open_sidebar">在侧边栏打开</a>
+            <a href="#" id="statusBarOptions" data-i18n="settings">设置</a>
+          </span>
+        </div>
+      </div>
+      <div id="view-watchlist" class="view-panel watchlist-view" role="tabpanel">
+        <div class="editor-content">
+          <section class="section">
+            <h2 class="section-title" data-i18n="watchlist_title">自选</h2>
+            <div class="watchlist-search">
+              <div class="analysis-options">
+                <label class="analysis-option-label" for="watchlistTickerInput" data-i18n="quote_input_label">股票代码</label>
+                <input id="watchlistTickerInput" class="analysis-select" type="text" data-i18n-placeholder="quote_input_placeholder" placeholder="如 MP / AAPL / MP_US_EQ" autocomplete="off" />
+                <button type="button" id="watchlistSearch" class="secondary" data-i18n="quote_search">查询</button>
+              </div>
+              <p class="analysis-hint" data-i18n="watchlist_search_hint">输入股票代码查询，若不在自选中可直接加入。</p>
+              <div id="watchlistSearchError" class="state-error hidden"></div>
+              <div id="watchlistSearchResult" class="analysis-result hidden"></div>
+            </div>
+            <div id="watchlistList" class="positions-list"></div>
+          </section>
+        </div>
+        <button type="button" class="detail-back" id="watchlistBack" data-i18n="back_main">返回</button>
+      </div>
+      <div id="view-position-detail" class="position-detail-view" role="tabpanel">
+        <button type="button" class="detail-back" id="detailBack" data-i18n="back_positions">返回持仓</button>
+        <div id="positionDetailContent"></div>
+        <div id="positionTradeTicket"></div>
+        <div id="positionPendingOrders"></div>
+      </div>
+      <div id="view-analysis" class="view-panel analysis-view" role="tabpanel">
+        <div class="editor-content">
+          <section class="section">
+            <h2 class="section-title" data-i18n="analysis_title">AI 行情分析</h2>
+            <p class="analysis-primary-hint" data-i18n="analysis_primary_hint">推荐在 MiroMind 中分析：一键复制持仓总结并打开 MiroMind，粘贴即可。无需配置、不消耗额度。</p>
+            <div class="analysis-prompt-wrap">
+              <label class="analysis-option-label" for="analysisPromptInput" data-i18n="analysis_prompt_label">分析 Prompt</label>
+              <textarea id="analysisPromptInput" class="analysis-prompt-input" rows="8"></textarea>
+              <p id="analysisPromptEditableHint" class="analysis-editable-hint"></p>
+              <div class="analysis-prompt-actions">
+                <button type="button" id="analysisResetPrompt" class="secondary" data-i18n="analysis_prompt_reset">重置 Prompt</button>
+                <button type="button" id="analysisCopyPrompt" class="secondary" data-i18n="analysis_copy_prompt">复制 Prompt</button>
+                <span id="analysisPromptStatus" class="analysis-status hidden"></span>
+              </div>
+            </div>
+            <div class="analysis-site-links">
+              <button type="button" id="analysisOpenMiroMindSite" class="secondary" data-i18n="analysis_open_miromind">打开 MiroMind</button>
+              <button type="button" id="analysisOpenChatGPTSite" class="secondary" data-i18n="analysis_open_chatgpt">打开 ChatGPT</button>
+              <button type="button" id="analysisOpenPerplexitySite" class="secondary" data-i18n="analysis_open_perplexity">打开 Perplexity</button>
+            </div>
+            <div class="analysis-primary">
+              <div class="analysis-options">
+                <label class="analysis-option-label" data-i18n="analysis_lang_label">输出语言</label>
+                <select id="analysisLanguageSelect" class="analysis-select">
+                  <option value="follow" data-i18n="analysis_lang_follow">跟随扩展设置</option>
+                  <option value="zh">中文</option>
+                  <option value="en">English</option>
+                </select>
+              </div>
+              <button type="button" id="analysisCopyAndOpenMiroMind" class="primary analysis-btn-primary" data-i18n="analysis_copy_open_miromind">复制 Prompt 并打开 MiroMind</button>
+              <span id="analysisMiroMindStatus" class="analysis-status hidden"></span>
+            </div>
+            <p class="analysis-secondary-divider" data-i18n="analysis_secondary_divider">或在扩展内生成（需配置 OpenRouter）</p>
+            <div class="analysis-secondary">
+              <div class="analysis-options">
+                <label class="analysis-option-label" data-i18n="analysis_model_label">分析模型</label>
+                <select id="analysisModelSelect" class="analysis-select">
+                  <option value="qwen/qwen3.5-plus-02-15:online">Qwen3.5 Plus 2026-02 + 实时搜索（推荐）</option>
+                  <option value="google/gemini-3.1-pro-preview:online">Gemini 3.1 Pro + 实时搜索</option>
+                  <option value="minimax/minimax-m2.5:online">MiniMax M2.5 + 实时搜索</option>
+                  <option value="qwen/qwen3.5-397b-a17b:online">Qwen3.5 397B + 实时搜索（便宜）</option>
+                  <option value="qwen/qwen3-coder-next:online">Qwen3 Coder Next + 实时搜索（极便宜）</option>
+                  <option value="perplexity/sonar">Perplexity Sonar（自带搜索）</option>
+                  <option value="qwen/qwen3.5-plus-02-15">Qwen3.5 Plus 2026-02（仅文本）</option>
+                  <option value="minimax/minimax-m2.5">MiniMax M2.5（仅文本）</option>
+                  <option value="anthropic/claude-sonnet-4.6:online">Claude Sonnet 4.6 + 实时搜索</option>
+                  <option value="openai/gpt-4o-mini:online">GPT-4o mini + 实时搜索</option>
+                </select>
+              </div>
+              <button type="button" id="analysisGenerate" class="secondary" data-i18n="analysis_generate_in_extension">在扩展内生成分析</button>
+            </div>
+            <div id="analysisError" class="state-error hidden"></div>
+            <div id="analysisResult" class="analysis-result hidden"></div>
+          </section>
+        </div>
+        <button type="button" class="detail-back" id="analysisBack" data-i18n="back_main">返回</button>
+        <div class="status-bar">
+          <span class="status-left"></span>
+          <span class="status-right">
+            <a href="#" id="statusBarSidePanelFromAnalysis" data-i18n="open_sidebar">在侧边栏打开</a>
+            <a href="#" id="statusBarOptionsFromAnalysis" data-i18n="settings">设置</a>
+          </span>
+        </div>
+      </div>
     </div>
   </div>
   <script type="module" src="panel.js"></script>

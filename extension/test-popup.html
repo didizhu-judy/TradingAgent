@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>T212 行情 - 测试</title>
+  <link rel="stylesheet" href="shared.css">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div id="app" class="app">
+    <header class="app-header">
+      <h1>T212 行情</h1>
+      <div class="header-actions">
+        <button id="refresh" type="button" class="btn-primary">刷新</button>
+      </div>
+    </header>
+    <div id="state-empty" class="state-view hidden">请在 <a href="#" id="openOptions">选项</a> 中配置 API Key 和 API Secret</div>
+    <div id="state-loading" class="state-view hidden">加载中…</div>
+    <div id="state-error" class="state-view state-error hidden"><span id="errorMessage"></span><button type="button" id="retryBtn" class="btn-primary" style="margin-top:10px;">重试</button></div>
+    <div id="content" class="content-wrap app-inner">
+      <nav class="tabs" role="tablist">
+        <button type="button" class="tab active" role="tab" id="tab-overview" aria-selected="true">总览</button>
+        <button type="button" class="tab" role="tab" id="tab-positions" aria-selected="false">持仓</button>
+        <button type="button" class="tab" role="tab" id="tab-cash" aria-selected="false">现金</button>
+        <button type="button" class="tab" role="tab" id="tab-more" aria-selected="false">更多</button>
+      </nav>
+      <div id="view-overview" class="view-panel active" role="tabpanel">
+        <section class="section summary-section">
+          <h2 class="section-title">账户总览</h2>
+          <div id="summaryRows"></div>
+        </section>
+        <p id="lastUpdatedOverview" class="last-updated"></p>
+      </div>
+      <div id="view-positions" class="view-panel" role="tabpanel">
+        <div class="positions-toolbar">
+          <span class="section-title">持仓</span>
+          <select id="positionsSort" title="排序">
+            <option value="value">按市值</option>
+            <option value="pl">按盈亏</option>
+            <option value="name">按名称</option>
+          </select>
+        </div>
+        <div id="positionsList" class="positions-list"></div>
+        <p id="lastUpdatedPositions" class="last-updated"></p>
+      </div>
+      <div id="view-cash" class="view-panel" role="tabpanel">
+        <section class="section">
+          <h2 class="section-title">现金</h2>
+          <div id="cashRows"></div>
+        </section>
+        <p id="lastUpdatedCash" class="last-updated"></p>
+      </div>
+      <div id="view-more" class="view-panel more-view" role="tabpanel">
+        <h2 class="section-title">更多</h2>
+        <div class="more-buttons">
+          <button id="openSidePanel" type="button" class="btn-secondary">在侧边栏打开</button>
+          <button id="openFloating" type="button" class="btn-secondary">在页面打开悬浮窗</button>
+          <button id="openOptionsFromMore" type="button" class="btn-secondary">选项与 API 配置</button>
+        </div>
+        <p class="more-hint">数据仅存本机，不上传。</p>
+        <p id="lastUpdatedMore" class="last-updated"></p>
+      </div>
+      <div id="view-position-detail" class="position-detail-view" role="tabpanel">
+        <button type="button" class="detail-back" id="detailBack">返回持仓</button>
+        <div id="positionDetailContent"></div>
+      </div>
+    </div>
+  </div>
+  <script type="module">
+    // 测试用：模拟 API 数据，不依赖 chrome
+    const fakeSummary = {
+      currency: 'GBP',
+      totalValue: 12500.50,
+      cash: { availableToTrade: 1200.00, blocked: 0, free: 1200.00, invested: 0, payout: 0 },
+      investments: { currentValue: 11300.50, unrealizedProfitLoss: 350.20, realizedProfitLoss: 120.30 }
+    };
+    const fakePositions = [
+      { instrument: { name: 'Apple Inc', ticker: 'AAPL' }, quantity: 10, currentPrice: 225.50, averagePricePaid: 218.00, walletImpact: { currentValue: 2255, totalCost: 2180, unrealizedProfitLoss: 75 } },
+      { instrument: { name: 'Vanguard S&P 500', ticker: 'VUSA' }, quantity: 25, currentPrice: 85.20, averagePricePaid: 82.00, walletImpact: { currentValue: 2130, totalCost: 2050, unrealizedProfitLoss: 80 } }
+    ];
+    window.chrome = {
+      storage: { local: { get: () => Promise.resolve({ apiKey: 'test', apiSecret: 'test', autoRefreshSeconds: 0 }), set: () => Promise.resolve() } },
+      runtime: { openOptionsPage: () => alert('选项页（测试）') },
+      windows: { getCurrent: (cb) => cb({ id: 1 }) },
+      sidePanel: { open: () => {} },
+      tabs: { query: (_, cb) => cb([{ id: 1 }]), sendMessage: () => {} },
+      scripting: { executeScript: (_, cb) => cb() }
+    };
+    const api = {
+      getConfig: () => Promise.resolve({ apiKey: 'test', apiSecret: 'test', autoRefreshSeconds: 0 }),
+      getAccountSummary: () => Promise.resolve(fakeSummary),
+      getPositions: () => Promise.resolve(fakePositions)
+    };
+    import('./app-core.js').then((core) => {
+      const el = {
+        empty: document.getElementById('state-empty'),
+        loading: document.getElementById('state-loading'),
+        error: document.getElementById('state-error'),
+        content: document.getElementById('content'),
+        summaryRows: document.getElementById('summaryRows'),
+        positionsList: document.getElementById('positionsList'),
+        cashRows: document.getElementById('cashRows'),
+        positionDetailContent: document.getElementById('positionDetailContent'),
+        viewOverview: document.getElementById('view-overview'),
+        viewPositions: document.getElementById('view-positions'),
+        viewCash: document.getElementById('view-cash'),
+        viewMore: document.getElementById('view-more'),
+        viewPositionDetail: document.getElementById('view-position-detail'),
+        tabOverview: document.getElementById('tab-overview'),
+        tabPositions: document.getElementById('tab-positions'),
+        tabCash: document.getElementById('tab-cash'),
+        tabMore: document.getElementById('tab-more'),
+        positionsSort: document.getElementById('positionsSort'),
+        detailBack: document.getElementById('detailBack'),
+        lastUpdatedOverview: document.getElementById('lastUpdatedOverview'),
+        lastUpdatedPositions: document.getElementById('lastUpdatedPositions'),
+        lastUpdatedCash: document.getElementById('lastUpdatedCash'),
+        lastUpdatedMore: document.getElementById('lastUpdatedMore'),
+        refresh: document.getElementById('refresh'),
+        openOptions: document.getElementById('openOptions'),
+        openSidePanel: document.getElementById('openSidePanel'),
+        openFloating: document.getElementById('openFloating'),
+        openOptionsFromMore: document.getElementById('openOptionsFromMore')
+      };
+      let state = { summary: null, positions: [], sortKey: 'value', lastUpdated: 0, currency: '', autoRefreshSeconds: 0, currentDetailIndex: null };
+      function show(which) {
+        el.empty.classList.add('hidden');
+        el.loading.classList.add('hidden');
+        el.error.classList.add('hidden');
+        el.content.classList.add('hidden');
+        if (which === 'empty') el.empty.classList.remove('hidden');
+        else if (which === 'loading') el.loading.classList.remove('hidden');
+        else if (which === 'error') el.error.classList.remove('hidden');
+        else if (which === 'content') el.content.classList.remove('hidden');
+      }
+      function setTab(activeTab) {
+        [el.tabOverview, el.tabPositions, el.tabCash, el.tabMore].forEach(t => {
+          t.classList.toggle('active', t === activeTab);
+          t.setAttribute('aria-selected', t === activeTab ? 'true' : 'false');
+        });
+        const panels = [el.viewOverview, el.viewPositions, el.viewCash, el.viewMore];
+        const idx = [el.tabOverview, el.tabPositions, el.tabCash, el.tabMore].indexOf(activeTab);
+        panels.forEach((p, i) => p.classList.toggle('active', i === idx));
+        el.viewPositionDetail.classList.remove('active');
+      }
+      function showPositionDetail(index) {
+        state.currentDetailIndex = index;
+        const sorted = core.sortPositions(state.positions, state.sortKey);
+        const position = sorted[index];
+        if (!position) return;
+        [el.viewOverview, el.viewPositions, el.viewCash, el.viewMore].forEach(p => p.classList.remove('active'));
+        el.viewPositionDetail.classList.add('active');
+        el.positionDetailContent.innerHTML = core.renderPositionDetail(position, state.currency);
+        el.detailBack.focus();
+      }
+      function backFromDetail() {
+        state.currentDetailIndex = null;
+        el.viewPositionDetail.classList.remove('active');
+        el.viewPositions.classList.add('active');
+        el.tabPositions.classList.add('active');
+        [el.tabOverview, el.tabCash, el.tabMore].forEach(t => t.classList.remove('active'));
+        el.tabPositions.setAttribute('aria-selected', 'true');
+      }
+      function updateLastUpdated() {
+        const text = core.formatLastUpdated(state.lastUpdated, state.autoRefreshSeconds);
+        [el.lastUpdatedOverview, el.lastUpdatedPositions, el.lastUpdatedCash, el.lastUpdatedMore].forEach(n => { n.textContent = text; });
+      }
+      function renderAll() {
+        el.summaryRows.innerHTML = core.renderSummaryRows(state.summary);
+        el.cashRows.innerHTML = core.renderCashRows(state.summary);
+        el.positionsList.innerHTML = core.renderPositionsList(state.positions, state.sortKey, { clickable: true });
+        el.positionsList.querySelectorAll('.position-card.clickable').forEach((card, i) => {
+          card.addEventListener('click', () => showPositionDetail(i));
+        });
+        if (el.viewPositionDetail.classList.contains('active') && state.currentDetailIndex != null) showPositionDetail(state.currentDetailIndex);
+        updateLastUpdated();
+      }
+      async function load() {
+        show('loading');
+        el.refresh.disabled = true;
+        try {
+          const [summary, positions] = await Promise.all([api.getAccountSummary(), api.getPositions()]);
+          state.summary = summary;
+          state.positions = Array.isArray(positions) ? positions : [];
+          state.currency = summary.currency || '';
+          state.lastUpdated = Date.now();
+          renderAll();
+          show('content');
+        } catch (e) {
+          document.getElementById('errorMessage').textContent = e.message || '请求失败';
+          show('error');
+        } finally {
+          el.refresh.disabled = false;
+        }
+      }
+      [el.tabOverview, el.tabPositions, el.tabCash, el.tabMore].forEach(tab => tab.addEventListener('click', () => setTab(tab)));
+      el.positionsSort.addEventListener('change', () => { state.sortKey = el.positionsSort.value; renderAll(); });
+      el.detailBack.addEventListener('click', backFromDetail);
+      el.refresh.addEventListener('click', load);
+      document.getElementById('retryBtn').addEventListener('click', load);
+      el.openOptions.addEventListener('click', e => { e.preventDefault(); chrome.runtime.openOptionsPage(); });
+      el.openOptionsFromMore.addEventListener('click', () => chrome.runtime.openOptionsPage());
+      el.openSidePanel.addEventListener('click', () => chrome.sidePanel.open({ windowId: 1 }));
+      document.addEventListener('keydown', e => { if (e.key === 'Escape' && el.viewPositionDetail.classList.contains('active')) backFromDetail(); });
+      load();
+    });
+  </script>
+</body>
+</html>

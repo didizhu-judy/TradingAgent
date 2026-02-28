@@ -42,7 +42,7 @@
       'cursor:move',
       'user-select:none'
     ].join(';');
-    header.textContent = 'T212 行情 — 拖拽移动';
+    header.textContent = 'T212 Agent — 拖拽移动';
     const closeBtn = document.createElement('button');
     closeBtn.textContent = '×';
     closeBtn.style.cssText = 'background:transparent;border:none;color:#8b949e;font-size:20px;cursor:pointer;line-height:1;padding:0 4px';
@@ -98,5 +98,11 @@
     if (msg.type === 'T212_TOGGLE_FLOATING') toggle();
     if (msg.type === 'T212_SHOW_FLOATING') show();
     if (msg.type === 'T212_HIDE_FLOATING') hide();
+  });
+
+  window.addEventListener('message', function(event) {
+    const msg = event && event.data;
+    if (!msg || typeof msg !== 'object') return;
+    if (msg.type === 'T212_HIDE_FLOATING_WIDGET') hide();
   });
 })();

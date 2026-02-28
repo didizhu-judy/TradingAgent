@@ -1,7 +1,29 @@
-@import "shared.css";
+body {
+  min-height: 100vh;
+  width: 100%;
+  min-width: 280px;
+  overflow: hidden;
+}
 
-body { min-height: 100vh; }
+#app {
+  min-height: 100vh;
+  max-height: 100vh;
+}
 
-.app-inner { padding: 0 0 16px 0; }
+.app-inner {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  padding: 0 0 12px 0;
+}
 
-.section { margin: 14px 16px; }
+.content-wrap {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}

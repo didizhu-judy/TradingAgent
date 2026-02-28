@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-work-skin="code">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="stylesheet" href="../shared.css" />
+  <link rel="stylesheet" href="../skins.css" />
+  <style>
+    body {
+      width: 380px;
+      min-height: 760px;
+      padding: 6px;
+      background: #ecf0f3;
+      overflow: hidden;
+    }
+    #app {
+      min-height: 0;
+      height: 740px;
+      border: 1px solid #cfd6e2;
+      box-shadow: 0 4px 18px rgba(20, 30, 44, 0.15);
+      overflow: hidden;
+    }
+    .content-wrap {
+      display: flex !important;
+      flex-direction: column;
+      min-height: 0;
+      flex: 1;
+    }
+    .view-panel,
+    .view-main {
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .editor-content {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" class="app">
+    <header class="app-header">
+      <div class="code-workbench-menu">
+        <button class="code-workbench-item">File</button>
+        <button class="code-workbench-item">Edit</button>
+        <button class="code-workbench-item">View</button>
+        <button class="code-workbench-item">Go</button>
+        <button class="code-workbench-item">Run</button>
+        <button class="code-workbench-item">Terminal</button>
+      </div>
+
+      <div class="work-skin-tabs" role="tablist" id="tabs"></div>
+      <div class="work-skin-ribbon" role="toolbar" id="ribbon"></div>
+
+      <h1>T212 Agent</h1>
+      <div class="header-actions">
+        <button id="themeToggle" class="theme-toggle" type="button" aria-label="Toggle Theme"><span class="icon-moon">🌙</span></button>
+        <div class="skin-menu-wrap"><button id="btnSkinMenu" type="button" class="secondary skin-trigger">Skin</button></div>
+        <div class="header-view-switch" role="tablist">
+          <button id="btnOverview" type="button" class="secondary view-switch-btn active">Overview</button>
+          <button id="btnWatchlist" type="button" class="secondary view-switch-btn">Watchlist</button>
+          <button id="btnAnalysis" type="button" class="secondary view-switch-btn">Analysis</button>
+        </div>
+      </div>
+      <span class="soul-cursor">|</span>
+    </header>
+
+    <div class="content-wrap app-inner">
+      <div class="view-panel active view-main">
+        <div id="editor" class="editor-content">
+          <aside class="code-line-rail" id="railCode"></aside>
+          <aside class="sheet-row-rail" id="railSheet"></aside>
+          <aside class="mail-folder-rail" id="railMail">Inbox
+Flagged
+Drafts
+Calendar
+Tasks</aside>
+          <aside class="slides-thumb-rail" id="railSlides">
+            <button class="slides-thumb-btn active"><span class="slides-thumb-title">Overview</span><span class="slides-thumb-subtitle">Account Overview</span></button>
+            <button class="slides-thumb-btn"><span class="slides-thumb-title">P&L</span><span class="slides-thumb-subtitle">P&L Snapshot</span></button>
+            <button class="slides-thumb-btn"><span class="slides-thumb-title">Cash</span><span class="slides-thumb-subtitle">Cash Focus</span></button>
+            <button class="slides-thumb-btn"><span class="slides-thumb-title">Positions</span><span class="slides-thumb-subtitle">Positions Focus</span></button>
+          </aside>
+
+          <section class="section summary-section">
+            <h2 class="section-title">Account Overview</h2>
+            <div class="summary-row"><span class="label">Total value</span><span class="value">19,931.32 GBP</span></div>
+            <div class="summary-row"><span class="label">Available cash</span><span class="value">3,226.38 GBP</span></div>
+            <div class="summary-row"><span class="label">Investments value</span><span class="value">16,704.94 GBP</span></div>
+            <div class="summary-row"><span class="label">Unrealized P&L</span><span class="value negative">-228.81 GBP</span></div>
+          </section>
+
+          <div class="positions-toolbar">
+            <span class="section-title">Positions</span>
+            <select><option>By Value</option></select>
+          </div>
+          <div id="positionsList" class="positions-list"></div>
+        </div>
+
+        <div class="status-bar">
+          <span class="status-left">Last updated 17:46:38 · 5 s until refresh</span>
+          <span class="status-right"><a href="#">Open in Side Panel</a><a href="#">Settings</a></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const params = new URLSearchParams(window.location.search);
+      const skin = (params.get('skin') || 'code').toLowerCase();
+      const width = Number(params.get('w')) || 380;
+      const height = Number(params.get('h')) || 760;
+      const scrollTop = Number(params.get('scroll')) || 0;
+      document.documentElement.setAttribute('data-work-skin', skin);
+      document.documentElement.setAttribute('data-theme', params.get('theme') || 'light');
+      document.body.style.width = width + 'px';
+      document.body.style.minHeight = height + 'px';
+      document.getElementById('app').style.height = (height - 20) + 'px';
+
+      const tabs = document.getElementById('tabs');
+      const ribbon = document.getElementById('ribbon');
+      const tabBySkin = {
+        code: ['overview.md', 'watchlist.md', 'analysis.md'],
+        doc: ['File', 'Home', 'Insert', 'Layout', 'References', 'Review', 'View'],
+        sheet: ['File', 'Home', 'Insert', 'Page Layout', 'Formulas', 'Data', 'View'],
+        slides: ['File', 'Home', 'Insert', 'Design', 'Transitions', 'View'],
+        mail: ['Home', 'Send/Receive', 'Folder', 'View']
+      };
+      const ribbonChips = {
+        code: [],
+        doc: ['Clipboard', 'Font', 'Paragraph', 'Styles', 'Editing'],
+        sheet: ['Cut', 'Copy', 'Bold', 'Borders', 'Left', 'Center'],
+        slides: ['New Slide', 'Layout', 'Bullets', 'Center', 'Arrange', 'Shape'],
+        mail: ['Paste', 'Copy', 'Bullets', 'Spacing']
+      };
+      tabs.innerHTML = (tabBySkin[skin] || []).map((name, idx) => {
+        const tone = idx === 0 ? '" data-tone="accent' : '';
+        if (skin === 'code') {
+          return `<button class="work-skin-tab${idx === 1 ? ' active' : ''}${tone}"><span class="work-skin-tab-label">${name}</span><span class="work-skin-tab-close">×</span></button>`;
+        }
+        return `<button class="work-skin-tab${idx === 1 ? ' active' : ''}${tone}">${name}</button>`;
+      }).join('');
+      ribbon.innerHTML = (ribbonChips[skin] || []).map(chip => `<section class="work-skin-group"><div class="work-skin-group-body"><div class="work-skin-group-items"><span class="work-skin-group-chip">${chip}</span></div></div></section>`).join('');
+
+      const list = document.getElementById('positionsList');
+      const items = [
+        ['Microsoft', 'MSFT_US_EQ', 'Qty 16.2', 'Cost 406.45', '-102.73 (-2.12%)', 'negative'],
+        ['iShares Physical Gold', 'SGLNl_EQ', 'Qty 14', 'Cost 7,367.21', '24.33 (2.36%)', 'positive'],
+        ['RTX Corp', 'UTX_US_EQ', 'Qty 7', 'Cost 201.42', '3.10 (0.30%)', 'positive'],
+        ['Alibaba', 'BABA_US_EQ', 'Qty 7.2', 'Cost 158.21', '-70.34 (-8.39%)', 'negative'],
+        ['Nvidia', 'NVDA_US_EQ', 'Qty 4.91682249', 'Cost 181.79', '-14.93 (-7.25%)', 'negative']
+      ];
+      list.innerHTML = items.map(item => `
+        <div class="position-card clickable">
+          <div class="position-name">${item[0]}</div>
+          <div class="position-ticker">${item[1]}</div>
+          <div class="position-row"><span class="label">${item[2]}</span><span class="value">Price 309.11</span></div>
+          <div class="position-row"><span class="label">${item[3]}</span><span class="position-pl ${item[5]}">${item[4]}</span></div>
+        </div>
+      `).join('');
+
+      const rails = {
+        code: document.getElementById('railCode'),
+        sheet: document.getElementById('railSheet'),
+        slides: document.getElementById('railSlides'),
+        mail: document.getElementById('railMail')
+      };
+      const editor = document.getElementById('editor');
+      editor.classList.toggle('skin-has-left-rail', ['code', 'sheet', 'slides', 'mail'].includes(skin));
+      Object.keys(rails).forEach(key => {
+        if (key !== skin) rails[key].remove();
+      });
+
+      if (skin === 'code') {
+        rails.code.textContent = Array.from({ length: 120 }, (_, i) => String(i + 1)).join('\n');
+      }
+      if (skin === 'sheet') {
+        rails.sheet.textContent = Array.from({ length: 120 }, (_, i) => String(i + 1)).join('\n');
+      }
+
+      if (scrollTop > 0) editor.scrollTop = scrollTop;
+    })();
+  </script>
+</body>
+</html>

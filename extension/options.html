@@ -3,13 +3,70 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Trading 212 行情助手 - 选项</title>
+  <title>T212 Agent - Options</title>
   <link rel="stylesheet" href="shared.css">
+  <link rel="stylesheet" href="skins.css">
   <link rel="stylesheet" href="options.css">
 </head>
 <body>
-  <h1 class="options-title">Trading 212 行情助手</h1>
+  <h1 class="options-title">T212 Agent</h1>
   <p class="options-hint">配置后数据仅存于本机，不会上传。</p>
+
+  <fieldset class="options-section quickstart">
+    <legend class="options-section-legend">首次配置指引</legend>
+    <ol class="options-guide-list">
+      <li>在下方 <strong>API</strong> 区域填写 Trading 212 的 <code>API Key</code> 和 <code>API Secret</code>，点击保存。</li>
+      <li>回到插件弹窗后会自动刷新数据；点击 <strong>Open in sidebar</strong> 可固定在浏览器侧边栏。</li>
+      <li>在 <strong>Watchlist</strong> 页面顶部可搜索股票并加入自选，自选价格会自动更新。</li>
+    </ol>
+  </fieldset>
+
+  <fieldset class="options-section">
+    <legend class="options-section-legend">外观 / Appearance</legend>
+    <label>职业场景皮肤 — 按工作语境切换界面风格（仅样式，不影响功能）</label>
+    <input type="hidden" id="workSkin" value="code">
+    <div id="workSkinGrid" class="work-skin-grid">
+      <button type="button" class="work-skin-card" data-work-skin="code">
+        <span class="work-skin-name">代码台</span>
+        <span class="work-skin-desc">编辑器式密集界面</span>
+      </button>
+      <button type="button" class="work-skin-card" data-work-skin="doc">
+        <span class="work-skin-name">文档台</span>
+        <span class="work-skin-desc">文档阅读式布局</span>
+      </button>
+      <button type="button" class="work-skin-card" data-work-skin="sheet">
+        <span class="work-skin-name">表格台</span>
+        <span class="work-skin-desc">网格式紧凑视图</span>
+      </button>
+      <button type="button" class="work-skin-card" data-work-skin="slides">
+        <span class="work-skin-name">演示台</span>
+        <span class="work-skin-desc">卡片化展示层次</span>
+      </button>
+      <button type="button" class="work-skin-card" data-work-skin="mail">
+        <span class="work-skin-name">邮件台</span>
+        <span class="work-skin-desc">收件箱风格信息流</span>
+      </button>
+    </div>
+    <label>皮肤主题模式</label>
+    <select id="skinThemeMode">
+      <option value="follow">跟随皮肤默认（可用顶部按钮临时切换）</option>
+      <option value="light">固定浅色</option>
+      <option value="dark">固定深色</option>
+    </select>
+    <label>背景透明度 — 调节弹窗、侧边栏、悬浮窗的整体背景透明度</label>
+    <div class="options-row options-row-opacity">
+      <input type="range" id="opacity" min="0" max="1" step="0.05" value="1">
+      <span id="opacityValue" class="options-value">100%</span>
+    </div>
+    <label>语言 / Language</label>
+    <select id="language">
+      <option value="zh">中文</option>
+      <option value="en">English</option>
+    </select>
+  </fieldset>
+
+  <fieldset class="options-section">
+    <legend class="options-section-legend">API</legend>
   <label>API Key</label>
   <input type="text" id="apiKey" placeholder="在 Trading 212 设置中 API (Beta) 生成" autocomplete="off">
   <label>API Secret</label>
@@ -25,6 +82,42 @@
   </div>
   <label>代理地址</label>
   <input type="text" id="proxyUrl" value="http://127.0.0.1:8765">
+  </fieldset>
+
+  <fieldset class="options-section">
+    <legend class="options-section-legend">刷新</legend>
+  <label>自动刷新间隔（秒，0 为关闭）</label>
+  <input type="number" id="autoRefreshSeconds" min="0" max="300" value="0" placeholder="0">
+  </fieldset>
+
+  <fieldset class="options-section">
+    <legend class="options-section-legend">AI 分析</legend>
+    <p class="options-hint"><strong>推荐使用 MiroMind 等专业 Agent 做行情分析：</strong>在扩展「分析」页点击「复制提示词并打开 MiroMind」即可，无需配置、不消耗额度。若希望在扩展内直接生成分析，可配置下方选项。</p>
+    <label>MiroMind 打开地址</label>
+    <input type="url" id="miroMindUrl" placeholder="https://dr.miromind.ai/" autocomplete="off">
+    <p class="options-hint">点击「复制提示词并打开 MiroMind」时会打开该网址，在 MiroMind 输入框粘贴 (Ctrl+V) 即可。</p>
+    <hr style="margin:14px 0; border:0; border-top:1px solid #ccc;">
+    <p class="options-hint"><strong>扩展内生成（可选）</strong> — 需配置 OpenRouter 或自建 API，会消耗额度。</p>
+    <label>自定义分析 API 地址（可选，填则优先于 OpenRouter）</label>
+    <input type="url" id="customAnalysisApiUrl" placeholder="http://localhost:8000/chat 等" autocomplete="off">
+    <p class="options-hint">接口需接受 POST，JSON 含 <code>messages</code>，返回 <code>choices[0].message.content</code> 或 <code>text</code>。</p>
+    <label>OpenRouter API Key</label>
+    <input type="password" id="openRouterApiKey" placeholder="sk-or-..." autocomplete="off">
+    <label>分析模型</label>
+    <select id="openRouterModel">
+      <option value="qwen/qwen3.5-plus-02-15:online">Qwen3.5 Plus 2026-02 + 实时搜索（推荐）</option>
+      <option value="google/gemini-3.1-pro-preview:online">Gemini 3.1 Pro + 实时搜索</option>
+      <option value="minimax/minimax-m2.5:online">MiniMax M2.5 + 实时搜索</option>
+      <option value="qwen/qwen3.5-397b-a17b:online">Qwen3.5 397B + 实时搜索（便宜）</option>
+      <option value="qwen/qwen3-coder-next:online">Qwen3 Coder Next + 实时搜索（极便宜）</option>
+      <option value="perplexity/sonar">Perplexity Sonar（自带搜索）</option>
+      <option value="qwen/qwen3.5-plus-02-15">Qwen3.5 Plus 2026-02（仅文本）</option>
+      <option value="minimax/minimax-m2.5">MiniMax M2.5（仅文本）</option>
+      <option value="anthropic/claude-sonnet-4.6:online">Claude Sonnet 4.6 + 实时搜索</option>
+      <option value="openai/gpt-4o-mini:online">GPT-4o mini + 实时搜索</option>
+    </select>
+  </fieldset>
+
   <button id="save" class="btn-primary">保存</button>
   <span id="status" style="margin-left:8px;font-size:14px;color:green;"></span>
   <script src="options.js"></script>

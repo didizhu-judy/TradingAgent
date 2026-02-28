@@ -1,14 +1,21 @@
 {
   "manifest_version": 3,
-  "name": "Trading 212 行情助手",
-  "version": "1.1.0",
+  "name": "T212 Agent",
+  "version": "1.2.1",
   "description": "在浏览器中快速查看 Trading 212 持仓、股价与收益，无需打开 App",
-  "permissions": ["storage", "sidePanel", "scripting", "activeTab"],
+  "permissions": [
+    "storage",
+    "sidePanel",
+    "scripting",
+    "activeTab"
+  ],
   "host_permissions": [
     "https://live.trading212.com/*",
     "https://demo.trading212.com/*",
+    "https://openrouter.ai/*",
     "http://127.0.0.1:8765/*",
-    "http://localhost:8765/*"
+    "http://localhost:8765/*",
+    "<all_urls>"
   ],
   "action": {
     "default_popup": "popup.html",
@@ -17,18 +24,45 @@
       "32": "icons/icon32.png",
       "48": "icons/icon48.png"
     },
-    "default_title": "Trading 212 行情"
+    "default_title": "T212 Agent"
   },
   "side_panel": {
     "default_path": "sidepanel.html"
   },
   "options_page": "options.html",
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*/*",
+        "http://*/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ],
   "icons": {
     "16": "icons/icon16.png",
     "32": "icons/icon32.png",
     "48": "icons/icon48.png"
   },
   "web_accessible_resources": [
-    { "resources": ["widget.html", "shared.css", "sidepanel.css", "panel.js", "api.js"], "matches": ["<all_urls>"] }
+    {
+      "resources": [
+        "widget.html",
+        "shared.css",
+        "skins.css",
+        "sidepanel.css",
+        "panel.js",
+        "appearance.js",
+        "api.js",
+        "app-core.js",
+        "i18n.js"
+      ],
+      "matches": [
+        "<all_urls>"
+      ]
+    }
   ]
 }

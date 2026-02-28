@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <title>T212 扩展逻辑自测</title>
+</head>
+<body>
+  <h1>T212 扩展逻辑自测</h1>
+  <pre id="out"></pre>
+  <script type="module">
+    const out = document.getElementById('out');
+    function log(msg) { out.textContent += msg + '\n'; }
+    try {
+      const core = await import('./app-core.js');
+      const { fmtNum, sortPositions, renderSummaryRows, renderCashRows, renderPositionsList, renderPositionDetail, formatLastUpdated } = core;
+      log('1. fmtNum: ' + (fmtNum(1234.5) === '1,234.50' ? '通过' : '失败'));
+      const summary = { currency: 'GBP', totalValue: 1000, cash: { availableToTrade: 100 }, investments: { currentValue: 900, unrealizedProfitLoss: 50 } };
+      const html1 = renderSummaryRows(summary);
+      log('2. renderSummaryRows 有总资产: ' + (html1.includes('总资产') && html1.includes('1,000.00') ? '通过' : '失败'));
+      const positions = [{ instrument: { name: 'A', ticker: 'A' }, quantity: 1, currentPrice: 10, averagePricePaid: 9, walletImpact: { currentValue: 10, totalCost: 9, unrealizedProfitLoss: 1 } }];
+      const html2 = renderPositionsList(positions, 'value', { clickable: true });
+      log('3. renderPositionsList 可点击: ' + (html2.includes('clickable') && html2.includes('data-position-index') ? '通过' : '失败'));
+      const sorted = sortPositions(positions, 'pl');
+      log('4. sortPositions: ' + (sorted.length === 1 ? '通过' : '失败'));
+      const detailHtml = renderPositionDetail(positions[0], 'GBP');
+      log('5. renderPositionDetail 有数量: ' + (detailHtml.includes('数量') && detailHtml.includes('1') ? '通过' : '失败'));
+      const t = formatLastUpdated(Date.now(), 30);
+      log('6. formatLastUpdated: ' + (t.includes('最后更新') && t.includes('30') ? '通过' : '失败'));
+      log('\n全部通过则扩展逻辑正常。');
+    } catch (e) {
+      log('错误: ' + e.message);
+    }
+  </script>
+</body>
+</html>

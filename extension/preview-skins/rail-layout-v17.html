@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-work-skin="code">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <link rel="stylesheet" href="../shared.css"/>
+  <link rel="stylesheet" href="../skins.css"/>
+  <style>
+    body {
+      width: 360px;
+      min-height: 720px;
+      padding: 6px;
+      background: #ecf0f3;
+      overflow: hidden;
+    }
+    #app {
+      min-height: 0;
+      height: 700px;
+      border: 1px solid #cfd6e2;
+      box-shadow: 0 4px 18px rgba(20, 30, 44, 0.15);
+      overflow: hidden;
+    }
+    .content-wrap {
+      display: flex !important;
+      flex-direction: column;
+      min-height: 0;
+      flex: 1;
+    }
+    .view-panel,
+    .view-main {
+      min-height: 0;
+      display: flex;
+      flex-direction: column;
+      flex: 1;
+    }
+    .editor-content {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+    }
+    .positions-list {
+      border-top: 0;
+    }
+    .app-header .code-workbench-menu,
+    .app-header .work-skin-tabs,
+    .app-header .work-skin-ribbon {
+      display: none;
+    }
+    .work-skin-tabs {
+      display: flex !important;
+    }
+    .work-skin-ribbon {
+      display: flex !important;
+    }
+    html[data-work-skin="code"] .work-skin-tabs,
+    html[data-work-skin="code"] .work-skin-ribbon {
+      display: none !important;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" class="app">
+    <header class="app-header">
+      <div class="code-workbench-menu">
+        <button class="code-workbench-item">File</button>
+        <button class="code-workbench-item">Edit</button>
+        <button class="code-workbench-item">View</button>
+        <button class="code-workbench-item">Go</button>
+        <button class="code-workbench-item">Run</button>
+      </div>
+      <div class="work-skin-tabs" role="tablist">
+        <button class="work-skin-tab" data-tone="accent">File</button>
+        <button class="work-skin-tab active">Home</button>
+        <button class="work-skin-tab">Insert</button>
+        <button class="work-skin-tab">Layout</button>
+        <button class="work-skin-tab">View</button>
+      </div>
+      <div class="work-skin-ribbon" role="toolbar">
+        <section class="work-skin-group">
+          <div class="work-skin-group-body">
+            <span class="work-skin-group-lead">Paste</span>
+            <div class="work-skin-group-items"><span class="work-skin-group-chip">Cut</span><span class="work-skin-group-chip">Copy</span></div>
+          </div>
+          <span class="work-skin-group-title">Clipboard</span>
+        </section>
+        <section class="work-skin-group">
+          <div class="work-skin-group-body">
+            <div class="work-skin-group-items"><span class="work-skin-group-chip">Bullets</span><span class="work-skin-group-chip">Spacing</span></div>
+          </div>
+          <span class="work-skin-group-title">Paragraph</span>
+        </section>
+      </div>
+      <h1>T212 Agent</h1>
+      <div class="header-actions">
+        <button class="theme-toggle" type="button" aria-label="Toggle Theme"><span class="icon-moon">🌙</span></button>
+        <div class="skin-menu-wrap"><button type="button" class="secondary skin-trigger">Skin</button></div>
+        <button type="button" class="secondary">Watchlist</button>
+        <button type="button" class="secondary">Analysis</button>
+      </div>
+      <span class="soul-cursor">|</span>
+    </header>
+
+    <div class="content-wrap app-inner">
+      <div class="view-panel active view-main">
+        <div id="editor" class="editor-content skin-has-left-rail">
+          <aside class="code-explorer-rail" id="railCode">
+            <div class="code-explorer-head">Explorer</div>
+            <ul class="code-explorer-files">
+              <li><button class="code-explorer-file active" data-depth="0">T212 Agent</button></li>
+              <li><button class="code-explorer-file" data-depth="1">popup.js</button></li>
+              <li><button class="code-explorer-file" data-depth="1">panel.js</button></li>
+              <li><button class="code-explorer-file" data-depth="1">shared.css</button></li>
+              <li><button class="code-explorer-file" data-depth="1">skins.css</button></li>
+            </ul>
+          </aside>
+
+          <aside class="sheet-row-rail" id="railSheet"></aside>
+
+          <aside class="mail-folder-rail" id="railMail">Inbox
+Flagged
+Drafts
+Calendar
+Tasks</aside>
+
+          <aside class="slides-thumb-rail" id="railSlides">
+            <button class="slides-thumb-btn active"><span class="slides-thumb-title">Overview</span><span class="slides-thumb-subtitle">Account Overview</span></button>
+            <button class="slides-thumb-btn"><span class="slides-thumb-title">P&L</span><span class="slides-thumb-subtitle">P&L Snapshot</span></button>
+            <button class="slides-thumb-btn"><span class="slides-thumb-title">Cash</span><span class="slides-thumb-subtitle">Cash Focus</span></button>
+            <button class="slides-thumb-btn"><span class="slides-thumb-title">Positions</span><span class="slides-thumb-subtitle">Positions Focus</span></button>
+          </aside>
+
+          <section class="section summary-section">
+            <h2 class="section-title">Account Overview</h2>
+            <div class="summary-row"><span class="label">Total value</span><span class="value">19,931.32 GBP</span></div>
+            <div class="summary-row"><span class="label">Available cash</span><span class="value">3,226.38 GBP</span></div>
+            <div class="summary-row"><span class="label">Investments value</span><span class="value">16,704.94 GBP</span></div>
+          </section>
+
+          <div class="positions-toolbar">
+            <span class="section-title">Positions</span>
+            <select><option>By Value</option></select>
+          </div>
+          <div class="positions-list" id="positionsList"></div>
+        </div>
+        <div class="status-bar">
+          <span class="status-left">Last updated 17:46:38 · 5 s until refresh</span>
+          <span class="status-right"><a href="#">Open in Side Panel</a><a href="#">Settings</a></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    (function() {
+      const params = new URLSearchParams(window.location.search);
+      const skin = (params.get('skin') || 'code').toLowerCase();
+      const width = Number(params.get('w')) || 360;
+      const height = Number(params.get('h')) || 720;
+      const scrollTop = Number(params.get('scroll')) || 0;
+      const lang = (params.get('lang') || 'en').toLowerCase() === 'zh' ? 'zh-CN' : 'en';
+      document.documentElement.lang = lang;
+      document.documentElement.setAttribute('data-work-skin', skin);
+      document.documentElement.setAttribute('data-theme', params.get('theme') || 'light');
+      document.body.style.width = width + 'px';
+      document.body.style.minHeight = height + 'px';
+      document.getElementById('app').style.height = (height - 20) + 'px';
+
+      const list = document.getElementById('positionsList');
+      const items = [
+        ['Microsoft', 'MSFT_US_EQ', 'Qty 16.2', 'Cost 406.45', '-102.73 (-2.12%)', 'negative'],
+        ['iShares Physical Gold', 'SGLNl_EQ', 'Qty 14', 'Cost 7,367.21', '24.33 (2.36%)', 'positive'],
+        ['RTX Corp', 'UTX_US_EQ', 'Qty 7', 'Cost 201.42', '3.10 (0.30%)', 'positive'],
+        ['Alibaba', 'BABA_US_EQ', 'Qty 7.2', 'Cost 158.21', '-70.34 (-8.39%)', 'negative'],
+        ['Nvidia', 'NVDA_US_EQ', 'Qty 4.91682249', 'Cost 181.79', '-14.93 (-7.25%)', 'negative'],
+        ['McDonalds', 'MCD_US_EQ', 'Qty 2', 'Cost 327.94', '22.78 (7.04%)', 'positive'],
+        ['Coca-Cola', 'KO_US_EQ', 'Qty 6', 'Cost 79.60', '11.58 (14.55%)', 'positive']
+      ];
+      list.innerHTML = items.map(item => `
+        <div class="position-card clickable">
+          <div class="position-name">${item[0]}</div>
+          <div class="position-ticker">${item[1]}</div>
+          <div class="position-row"><span class="label">${item[2]}</span><span class="value">Price 309.11</span></div>
+          <div class="position-row"><span class="label">${item[3]}</span><span class="position-pl ${item[5]}">${item[4]}</span></div>
+        </div>
+      `).join('');
+
+      const rails = {
+        code: document.getElementById('railCode'),
+        sheet: document.getElementById('railSheet'),
+        slides: document.getElementById('railSlides'),
+        mail: document.getElementById('railMail')
+      };
+      Object.values(rails).forEach(node => {
+        if (node) node.style.display = 'none';
+      });
+
+      if (skin === 'sheet') {
+        document.getElementById('railSheet').textContent = Array.from({ length: 60 }, (_, i) => String(i + 1)).join('\n');
+      }
+      if (skin === 'mail' && lang !== 'en') {
+        document.getElementById('railMail').textContent = '收件箱\n已标记\n草稿箱\n日历\n任务';
+      }
+
+      const activeRail = rails[skin];
+      if (activeRail) {
+        activeRail.style.display = '';
+      } else {
+        document.getElementById('editor').classList.remove('skin-has-left-rail');
+      }
+
+      if (skin !== 'slides') {
+        document.getElementById('railSlides').remove();
+      }
+      if (skin !== 'code') {
+        document.getElementById('railCode').remove();
+      }
+      if (skin !== 'sheet') {
+        document.getElementById('railSheet').remove();
+      }
+      if (skin !== 'mail') {
+        document.getElementById('railMail').remove();
+      }
+
+      if (scrollTop > 0) {
+        document.getElementById('editor').scrollTop = scrollTop;
+      }
+    })();
+  </script>
+</body>
+</html>

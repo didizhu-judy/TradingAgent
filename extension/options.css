@@ -1,4 +1,3 @@
-@import "shared.css";
 
 body { padding: 20px; max-width: 480px; }
 
@@ -24,8 +23,59 @@ input:focus, select:focus { outline: none; border-color: var(--accent); }
 
 input[type="checkbox"] { width: auto; margin-right: 8px; }
 
+.options-section { margin-top: 24px; padding: 16px; border: 1px solid var(--border); border-radius: var(--radius); }
+.options-section-legend { padding: 0 8px; font-weight: 600; color: var(--accent); }
+.options-guide-list { margin: 0; padding-left: 18px; color: var(--text-secondary); font-size: 12px; line-height: 1.6; }
+.options-guide-list li { margin: 6px 0; }
+.quickstart { margin-top: 12px; }
 .options-row { display: flex; align-items: center; gap: 8px; margin-top: 16px; }
 .options-row label { margin-top: 0; }
+.options-row-opacity { margin-top: 8px; }
+.options-row-opacity input[type="range"] { flex: 1; max-width: 200px; }
+.options-value { min-width: 3em; font-size: 13px; color: var(--text-secondary); }
 
+.work-skin-grid {
+  margin-top: 8px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.work-skin-card {
+  width: 100%;
+  text-align: left;
+  border: 1px solid var(--border);
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-radius: var(--radius);
+  padding: 10px;
+  cursor: pointer;
+  transition: border-color 0.15s ease, transform 0.12s ease, box-shadow 0.15s ease;
+}
+
+.work-skin-card:hover {
+  border-color: var(--accent);
+}
+
+.work-skin-card.active {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent-soft);
+  transform: translateY(-1px);
+}
+
+.work-skin-name {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.work-skin-desc {
+  display: block;
+  margin-top: 4px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+input[type="range"] { padding: 0; vertical-align: middle; }
 #save { margin-top: 20px; }
 #status { margin-left: 10px; font-size: 13px; color: var(--green); }
