@@ -4,19 +4,15 @@
 
 ## 界面总览（5 套职业皮肤）
 
-> 目标：同一套盯盘功能，不同职业语境界面一键切换。
+> 同一套盯盘功能，按工作语境一键切换（V1：Code / Document / Sheet / Slides / Mail）。
 
-| `Code Desk` 程序员语境 | `Document Desk` 文档语境 |
+| 皮肤 | 预览 |
 | --- | --- |
-| ![Code Desk](extension/preview-skins/code-v24-380.png) | ![Document Desk](extension/preview-skins/doc-v22-380.png) |
-
-| `Sheet Desk` 表格语境 | `Slides Desk` 演示语境 |
-| --- | --- |
-| ![Sheet Desk](extension/preview-skins/sheet-v22-380.png) | ![Slides Desk](extension/preview-skins/slides-v24-380.png) |
-
-| `Mail Desk` 邮件语境 |
-| --- |
-| ![Mail Desk](extension/preview-skins/mail-v24-380.png) |
+| `Code Desk`（程序员） | ![Code Desk](extension/preview-skins/code-v25-380.png) |
+| `Document Desk`（文档） | ![Document Desk](extension/preview-skins/doc-v25-380.png) |
+| `Sheet Desk`（表格） | ![Sheet Desk](extension/preview-skins/sheet-v25-380.png) |
+| `Slides Desk`（演示） | ![Slides Desk](extension/preview-skins/slides-v25-380.png) |
+| `Mail Desk`（邮件） | ![Mail Desk](extension/preview-skins/mail-v25-380.png) |
 
 ## 获取 API Key
 

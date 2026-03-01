@@ -519,22 +519,22 @@ html[data-theme="dark"] .first-use-guide {
 }
 .editor-content .section { margin: 0 0 0 0; border-radius: 0; border-left: none; border-right: none; border-top: none; }
 
-.view-main .editor-content.skin-has-left-rail {
+.editor-content.skin-has-left-rail {
   display: grid;
   grid-template-columns: var(--skin-left-rail-width, 92px) minmax(0, 1fr);
   column-gap: 12px;
   align-items: start;
 }
 
-.view-main .editor-content.skin-has-left-rail > :not(.slides-thumb-rail):not(.code-line-rail):not(.sheet-row-rail):not(.mail-folder-rail) {
+.editor-content.skin-has-left-rail > :not(.slides-thumb-rail):not(.code-line-rail):not(.sheet-row-rail):not(.mail-folder-rail) {
   grid-column: 2;
   min-width: 0;
 }
 
-.view-main .editor-content.skin-has-left-rail > .slides-thumb-rail,
-.view-main .editor-content.skin-has-left-rail > .code-line-rail,
-.view-main .editor-content.skin-has-left-rail > .sheet-row-rail,
-.view-main .editor-content.skin-has-left-rail > .mail-folder-rail {
+.editor-content.skin-has-left-rail > .slides-thumb-rail,
+.editor-content.skin-has-left-rail > .code-line-rail,
+.editor-content.skin-has-left-rail > .sheet-row-rail,
+.editor-content.skin-has-left-rail > .mail-folder-rail {
   grid-column: 1;
   grid-row: 1 / span 99;
   position: sticky;
@@ -856,9 +856,9 @@ html[data-theme="dark"] .position-card:hover { background: rgba(255,255,255,0.06
 .analysis-view.active { display: flex; }
 .analysis-view .editor-content { padding: 10px 14px; }
 .analysis-modules {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 .analysis-module {
   border: 1px solid var(--border);
@@ -944,20 +944,20 @@ html[data-theme="dark"] .position-card:hover { background: rgba(255,255,255,0.06
 .watchlist-card {
   padding-top: 8px;
   padding-bottom: 8px;
-  overflow: hidden;
+  overflow: visible;
 }
 
 .watchlist-row {
-  display: flex;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
   align-items: center;
-  flex-wrap: wrap;
-  gap: 8px;
+  gap: 8px 10px;
   margin-top: 6px;
   min-width: 0;
 }
 
 .watchlist-price {
-  flex: 1 1 100%;
+  grid-column: 1;
   min-width: 0;
   white-space: nowrap;
   overflow: hidden;
@@ -965,31 +965,41 @@ html[data-theme="dark"] .position-card:hover { background: rgba(255,255,255,0.06
 }
 
 .watchlist-change {
-  flex: 1 1 130px;
+  grid-column: 2;
   min-width: 0;
-  white-space: normal;
+  white-space: nowrap;
   text-align: right;
-  overflow-wrap: anywhere;
+  overflow: hidden;
+  text-overflow: ellipsis;
   line-height: 1.25;
 }
 
 .watchlist-card .watchlist-trade-btn {
+  grid-column: 3;
   flex: 0 0 auto;
   min-height: 24px;
   padding: 2px 10px;
   font-size: 11px;
   line-height: 1.1;
-  margin-left: auto;
+  margin-left: 0;
 }
 
 @media (max-width: 420px) {
+  .watchlist-row {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
   .watchlist-change {
-    flex: 1 1 110px;
+    grid-column: 1;
     min-width: 0;
     font-size: 10.5px;
+    text-align: left;
   }
 
   .watchlist-card .watchlist-trade-btn {
+    grid-column: 2;
+    grid-row: 1 / span 2;
+    align-self: center;
     flex: 0 0 auto;
     min-height: 22px;
     padding: 2px 8px;
@@ -1003,12 +1013,11 @@ html[data-theme="dark"] .position-card:hover { background: rgba(255,255,255,0.06
 
 @media (max-width: 340px) {
   .watchlist-change {
-    flex: 1 1 auto;
-    text-align: right;
+    text-align: left;
   }
 
   .watchlist-card .watchlist-trade-btn {
-    margin-left: auto;
+    justify-self: end;
   }
 }
 
@@ -1043,7 +1052,7 @@ html[data-theme="dark"] .position-card:hover { background: rgba(255,255,255,0.06
 .view-main .editor-content { flex: 1; padding-bottom: 20px; }
 
 @media (max-width: 360px) {
-  .view-main .editor-content.skin-has-left-rail {
+  .editor-content.skin-has-left-rail {
     grid-template-columns: var(--skin-left-rail-width-mobile, 68px) minmax(0, 1fr);
     column-gap: 8px;
   }

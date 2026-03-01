@@ -780,8 +780,13 @@ function getMainEditorContent() {
   return mainView ? mainView.querySelector('.editor-content') : null;
 }
 
-function ensureCodeLineRail() {
-  const editor = getMainEditorContent();
+function getAllEditorContents() {
+  return [el.viewMain, el.viewWatchlist, el.viewAnalysis]
+    .map(view => (view ? view.querySelector('.editor-content') : null))
+    .filter(Boolean);
+}
+
+function ensureCodeLineRail(editor = getMainEditorContent()) {
   if (!editor) return null;
   let rail = editor.querySelector('.code-line-rail');
   if (!rail) {
@@ -794,8 +799,8 @@ function ensureCodeLineRail() {
 }
 
 function renderCodeLineRail() {
-  const rail = ensureCodeLineRail();
   const editor = getMainEditorContent();
+  const rail = ensureCodeLineRail(editor);
   if (!rail || !editor) return;
   const contentNodes = Array.from(editor.children).filter(node => {
     if (!(node instanceof HTMLElement)) return false;
@@ -815,8 +820,29 @@ function renderCodeLineRail() {
   rail.textContent = Array.from({ length: lineCount }, (_, i) => String(i + 1)).join('\n');
 }
 
-function ensureSheetRowRail() {
-  const editor = getMainEditorContent();
+function renderCodeLineRailForEditor(editor) {
+  if (!editor) return;
+  const rail = ensureCodeLineRail(editor);
+  if (!rail) return;
+  const contentNodes = Array.from(editor.children).filter(node => {
+    if (!(node instanceof HTMLElement)) return false;
+    return !node.classList.contains('code-line-rail')
+      && !node.classList.contains('sheet-row-rail')
+      && !node.classList.contains('mail-folder-rail')
+      && !node.classList.contains('slides-thumb-rail');
+  });
+  let contentBottom = 0;
+  contentNodes.forEach(node => {
+    const bottom = node.offsetTop + node.offsetHeight;
+    if (bottom > contentBottom) contentBottom = bottom;
+  });
+  const measuredHeight = Math.max(editor.clientHeight, contentBottom);
+  const dynamicCount = Math.ceil(measuredHeight / CODE_LINE_HEIGHT_PX) + 10;
+  const lineCount = Math.max(CODE_LINE_BASE_COUNT, dynamicCount);
+  rail.textContent = Array.from({ length: lineCount }, (_, i) => String(i + 1)).join('\n');
+}
+
+function ensureSheetRowRail(editor = getMainEditorContent()) {
   if (!editor) return null;
   let rail = editor.querySelector('.sheet-row-rail');
   if (!rail) {
@@ -829,13 +855,12 @@ function ensureSheetRowRail() {
 }
 
 function renderSheetRowRail() {
-  const rail = ensureSheetRowRail();
+  const rail = ensureSheetRowRail(getMainEditorContent());
   if (!rail) return;
   rail.textContent = SHEET_RAIL_LINES.join('\n');
 }
 
-function ensureMailFolderRail() {
-  const editor = getMainEditorContent();
+function ensureMailFolderRail(editor = getMainEditorContent()) {
   if (!editor) return null;
   let rail = editor.querySelector('.mail-folder-rail');
   if (!rail) {
@@ -848,42 +873,87 @@ function ensureMailFolderRail() {
 }
 
 function renderMailFolderRail() {
-  const rail = ensureMailFolderRail();
+  const rail = ensureMailFolderRail(getMainEditorContent());
   if (!rail) return;
   const lang = state.lang === 'en' ? 'en' : 'zh';
   rail.textContent = MAIL_FOLDERS.map(item => textForLang(item, lang)).join('\n');
 }
 
-function syncMainEditorRails() {
-  const editor = getMainEditorContent();
+function renderStaticSlidesThumbRail(editor) {
   if (!editor) return;
+  let rail = editor.querySelector('.slides-thumb-rail');
+  if (!rail) {
+    rail = document.createElement('div');
+    rail.className = 'slides-thumb-rail';
+    rail.setAttribute('data-slides-static', '1');
+    editor.prepend(rail);
+  }
+  rail.setAttribute('aria-hidden', 'true');
+  rail.innerHTML = '';
+  const L = state.lang === 'en' ? 'en' : 'zh';
+  const current = normalizeSlidesScene(state.slidesScene);
+  const frag = document.createDocumentFragment();
+  SLIDES_SCENES.forEach(scene => {
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'slides-thumb-btn' + (scene.id === current ? ' active' : '');
+    btn.setAttribute('tabindex', '-1');
+    const title = document.createElement('span');
+    title.className = 'slides-thumb-title';
+    title.textContent = t(L, scene.titleKey);
+    const subtitle = document.createElement('span');
+    subtitle.className = 'slides-thumb-subtitle';
+    subtitle.textContent = t(L, scene.subtitleKey);
+    btn.appendChild(title);
+    btn.appendChild(subtitle);
+    frag.appendChild(btn);
+  });
+  rail.appendChild(frag);
+}
+
+function syncMainEditorRails() {
   const skin = normalizeWorkSkin(state.workSkin);
   const needsLeftRail = skin === 'code' || skin === 'sheet' || skin === 'slides' || skin === 'mail';
-  editor.classList.toggle('skin-has-left-rail', needsLeftRail);
+  const mainEditor = getMainEditorContent();
+  getAllEditorContents().forEach(editor => {
+    const isMain = editor === mainEditor;
+    editor.classList.toggle('skin-has-left-rail', needsLeftRail);
 
-  if (skin === 'code') {
-    renderCodeLineRail();
-  } else {
-    editor.querySelectorAll('.code-line-rail').forEach(node => node.remove());
-  }
+    if (skin === 'code') {
+      renderCodeLineRailForEditor(editor);
+    } else {
+      editor.querySelectorAll('.code-line-rail').forEach(node => node.remove());
+    }
 
-  if (skin === 'sheet') {
-    renderSheetRowRail();
-  } else {
-    editor.querySelectorAll('.sheet-row-rail').forEach(node => node.remove());
-  }
+    if (skin === 'sheet') {
+      const rail = ensureSheetRowRail(editor);
+      if (rail) rail.textContent = SHEET_RAIL_LINES.join('\n');
+    } else {
+      editor.querySelectorAll('.sheet-row-rail').forEach(node => node.remove());
+    }
 
-  if (skin === 'mail') {
-    renderMailFolderRail();
-  } else {
-    editor.querySelectorAll('.mail-folder-rail').forEach(node => node.remove());
-  }
+    if (skin === 'mail') {
+      const rail = ensureMailFolderRail(editor);
+      if (rail) {
+        const lang = state.lang === 'en' ? 'en' : 'zh';
+        rail.textContent = MAIL_FOLDERS.map(item => textForLang(item, lang)).join('\n');
+      }
+    } else {
+      editor.querySelectorAll('.mail-folder-rail').forEach(node => node.remove());
+    }
 
-  if (skin === 'slides') {
-    ensureSlidesThumbRail();
-  } else {
-    editor.querySelectorAll('.slides-thumb-rail').forEach(node => node.remove());
-  }
+    if (skin === 'slides') {
+      if (isMain) {
+        const staticRail = editor.querySelector('.slides-thumb-rail[data-slides-static="1"]');
+        if (staticRail) staticRail.remove();
+        ensureSlidesThumbRail();
+      } else {
+        renderStaticSlidesThumbRail(editor);
+      }
+    } else {
+      editor.querySelectorAll('.slides-thumb-rail').forEach(node => node.remove());
+    }
+  });
 }
 
 function getSlidesMainNodes() {
