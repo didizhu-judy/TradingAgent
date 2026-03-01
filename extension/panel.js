@@ -696,14 +696,12 @@ function setActiveWorkSkinTab(tabId) {
   const config = getWorkSkinChromeConfig();
   if (!config || !config.tabs.some(tab => tab.id === tabId)) return;
   const skin = normalizeWorkSkin(state.workSkin);
-  if (skin !== 'code') return;
   const isSameTab = state.activeChromeTabBySkin[skin] === tabId;
   state.activeChromeTabBySkin[skin] = tabId;
   if (!isSameTab) renderWorkSkinChrome();
-  if (skin === 'code') {
-    const nextView = CODE_VIEW_BY_TAB[tabId] || 'main';
-    showView(nextView, { fromCodeTab: true });
-  }
+  if (skin !== 'code') return;
+  const nextView = CODE_VIEW_BY_TAB[tabId] || 'main';
+  showView(nextView, { fromCodeTab: true });
 }
 
 function syncCodeTabWithView(viewName) {

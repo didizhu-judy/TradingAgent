@@ -2169,6 +2169,14 @@ html[data-work-skin="bi"] .work-skin-tab.active {
   box-shadow: 0 1px 0 0 var(--chrome-tab-active-bg);
 }
 
+html[data-theme="light"][data-work-skin="doc"] .work-skin-tab.active,
+html[data-theme="light"][data-work-skin="sheet"] .work-skin-tab.active,
+html[data-theme="light"][data-work-skin="slides"] .work-skin-tab.active,
+html[data-theme="light"][data-work-skin="mail"] .work-skin-tab.active,
+html[data-theme="light"][data-work-skin="bi"] .work-skin-tab.active {
+  background: #ffffff;
+}
+
 html[data-work-skin="doc"] .work-skin-group,
 html[data-work-skin="sheet"] .work-skin-group,
 html[data-work-skin="slides"] .work-skin-group,
