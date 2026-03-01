@@ -5,9 +5,17 @@
   const ID = 't212-floating-widget-root';
   const IFRAME_ID = 't212-floating-iframe';
 
+  function ensureBody() {
+    if (document.body) return document.body;
+    if (document.documentElement) return document.documentElement;
+    return null;
+  }
+
   function getOrCreateRoot() {
     let root = document.getElementById(ID);
     if (root) return root;
+    const host = ensureBody();
+    if (!host) return null;
     root = document.createElement('div');
     root.id = ID;
     root.style.cssText = [
@@ -23,7 +31,7 @@
       'box-shadow:0 8px 32px rgba(0,0,0,0.4)',
       'font-family:system-ui,sans-serif'
     ].join(';');
-    document.body.appendChild(root);
+    host.appendChild(root);
     return root;
   }
 
@@ -70,6 +78,7 @@
 
   function show() {
     const root = getOrCreateRoot();
+    if (!root) return;
     if (document.getElementById(IFRAME_ID)) {
       root.style.display = 'block';
       return;
@@ -95,9 +104,11 @@
   }
 
   chrome.runtime.onMessage.addListener(function(msg) {
-    if (msg.type === 'T212_TOGGLE_FLOATING') toggle();
-    if (msg.type === 'T212_SHOW_FLOATING') show();
-    if (msg.type === 'T212_HIDE_FLOATING') hide();
+    try {
+      if (msg.type === 'T212_TOGGLE_FLOATING') toggle();
+      if (msg.type === 'T212_SHOW_FLOATING') show();
+      if (msg.type === 'T212_HIDE_FLOATING') hide();
+    } catch (_) {}
   });
 
   window.addEventListener('message', function(event) {

@@ -2017,8 +2017,12 @@ function hideFloatingWidgetIfEmbedded() {
 }
 
 function openSidePanelAndMaybeHideFloating() {
-  chrome.windows.getCurrent(win => {
-    if (win && win.id != null) chrome.sidePanel.open({ windowId: win.id });
+  chrome.windows.getCurrent(async win => {
+    try {
+      if (win && win.id != null && chrome.sidePanel && typeof chrome.sidePanel.open === 'function') {
+        await chrome.sidePanel.open({ windowId: win.id });
+      }
+    } catch (_) {}
   });
   chrome.runtime.sendMessage({ type: 'T212_HIDE_FLOATING' }).catch(() => {});
   hideFloatingWidgetIfEmbedded();
@@ -2198,9 +2202,11 @@ if (el.analysisCopyPrompt) {
 }
 if (el.analysisOpenMiroMindSite) {
   el.analysisOpenMiroMindSite.addEventListener('click', async () => {
-    const config = await getConfig();
-    const url = (config.miroMindUrl || 'https://dr.miromind.ai/').replace(/\/$/, '') || 'https://dr.miromind.ai';
-    window.open(url, '_blank');
+    try {
+      const config = await getConfig();
+      const url = (config.miroMindUrl || 'https://dr.miromind.ai/').replace(/\/$/, '') || 'https://dr.miromind.ai';
+      window.open(url, '_blank');
+    } catch (_) {}
   });
 }
 if (el.analysisOpenChatGPTSite) {
@@ -2215,9 +2221,9 @@ if (el.analysisOpenPerplexitySite) {
 }
 if (el.analysisCopyAndOpenMiroMind) {
   el.analysisCopyAndOpenMiroMind.addEventListener('click', async function() {
-    const config = await getConfig();
-    const prompt = (el.analysisPromptInput && el.analysisPromptInput.value.trim()) ? el.analysisPromptInput.value : getDefaultAnalysisPrompt();
     try {
+      const config = await getConfig();
+      const prompt = (el.analysisPromptInput && el.analysisPromptInput.value.trim()) ? el.analysisPromptInput.value : getDefaultAnalysisPrompt();
       await navigator.clipboard.writeText(prompt);
       const url = (config.miroMindUrl || 'https://dr.miromind.ai/').replace(/\/$/, '') || 'https://dr.miromind.ai';
       window.open(url, '_blank');
@@ -2236,24 +2242,24 @@ if (el.analysisCopyAndOpenMiroMind) {
 }
 if (el.analysisGenerate) {
   el.analysisGenerate.addEventListener('click', async function() {
-    const config = await getConfig();
-    if (!config.customAnalysisApiUrl && !config.openRouterApiKey) {
-      if (el.analysisError) {
-        el.analysisError.textContent = t(state.lang, 'analysis_no_key');
-        el.analysisError.classList.remove('hidden');
-      }
-      if (el.analysisResult) el.analysisResult.classList.add('hidden');
-      return;
-    }
-    const model = el.analysisModelSelect ? el.analysisModelSelect.value : config.openRouterModel;
-    const effectiveLang = getEffectiveAnalysisLang();
-    const promptInput = el.analysisPromptInput ? el.analysisPromptInput.value.trim() : '';
-    const customPrompt = !config.customAnalysisApiUrl && promptInput ? promptInput : '';
-    if (el.analysisError) el.analysisError.classList.add('hidden');
-    if (el.analysisResult) el.analysisResult.classList.add('hidden');
-    el.analysisGenerate.disabled = true;
-    el.analysisGenerate.textContent = t(state.lang, 'analysis_loading');
     try {
+      const config = await getConfig();
+      if (!config.customAnalysisApiUrl && !config.openRouterApiKey) {
+        if (el.analysisError) {
+          el.analysisError.textContent = t(state.lang, 'analysis_no_key');
+          el.analysisError.classList.remove('hidden');
+        }
+        if (el.analysisResult) el.analysisResult.classList.add('hidden');
+        return;
+      }
+      const model = el.analysisModelSelect ? el.analysisModelSelect.value : config.openRouterModel;
+      const effectiveLang = getEffectiveAnalysisLang();
+      const promptInput = el.analysisPromptInput ? el.analysisPromptInput.value.trim() : '';
+      const customPrompt = !config.customAnalysisApiUrl && promptInput ? promptInput : '';
+      if (el.analysisError) el.analysisError.classList.add('hidden');
+      if (el.analysisResult) el.analysisResult.classList.add('hidden');
+      el.analysisGenerate.disabled = true;
+      el.analysisGenerate.textContent = t(state.lang, 'analysis_loading');
       const text = await getMarketAnalysisFromConfig(config, state.positions, state.summary, effectiveLang, model, customPrompt);
       if (el.analysisResult) {
         el.analysisResult.textContent = text;
@@ -2288,5 +2294,7 @@ getConfig().then(config => {
   state.lang = config.language === 'en' ? 'en' : 'zh';
   applyTheme(config);
   applyI18n(state.lang);
-  load(false).then(() => { startPolling(); });
-});
+  return load(false);
+}).then(() => {
+  startPolling();
+}).catch(() => {});
