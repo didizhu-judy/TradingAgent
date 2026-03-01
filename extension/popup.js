@@ -313,7 +313,7 @@ const SLIDES_SCENES = [
   { id: 'positions', titleKey: 'slides_thumb_positions', subtitleKey: 'slides_scene_title_positions' }
 ];
 
-const CODE_LINE_BASE_COUNT = 120;
+const CODE_LINE_BASE_COUNT = 24;
 const CODE_LINE_HEIGHT_PX = 22;
 const CODE_VIEW_BY_TAB = {
   overview: 'main',
@@ -909,6 +909,18 @@ function renderStaticSlidesThumbRail(editor) {
   rail.appendChild(frag);
 }
 
+function syncDocPaperHeight() {
+  const skin = normalizeWorkSkin(state.workSkin);
+  getAllEditorContents().forEach(editor => {
+    if (skin !== 'doc') {
+      editor.style.removeProperty('--doc-paper-height');
+      return;
+    }
+    const paperHeight = Math.max(editor.scrollHeight, editor.clientHeight) + 18;
+    editor.style.setProperty('--doc-paper-height', `${paperHeight}px`);
+  });
+}
+
 function syncMainEditorRails() {
   const skin = normalizeWorkSkin(state.workSkin);
   const needsLeftRail = skin === 'code' || skin === 'sheet' || skin === 'slides' || skin === 'mail';
@@ -952,6 +964,7 @@ function syncMainEditorRails() {
       editor.querySelectorAll('.slides-thumb-rail').forEach(node => node.remove());
     }
   });
+  syncDocPaperHeight();
 }
 
 function getSlidesMainNodes() {
@@ -2180,6 +2193,11 @@ if (el.analysisLanguageSelect) {
 if (el.analysisResetPrompt) {
   el.analysisResetPrompt.addEventListener('click', () => {
     syncAnalysisPromptEditor(true);
+  });
+}
+if (el.analysisPromptInput) {
+  el.analysisPromptInput.addEventListener('input', () => {
+    syncDocPaperHeight();
   });
 }
 if (el.analysisCopyPrompt) {

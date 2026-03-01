@@ -732,13 +732,16 @@ html[data-work-skin="doc"] .editor-content::before {
   position: absolute;
   left: 50%;
   top: 8px;
-  bottom: 10px;
+  height: var(--doc-paper-height, calc(100% - 18px));
+  min-height: calc(100% - 18px);
+  max-height: none;
   width: calc(100% - 20px);
   max-width: 840px;
   transform: translateX(-50%);
   background: #ffffff;
   border: 1px solid #d6dce8;
   box-shadow: 0 6px 18px rgba(24, 37, 58, 0.12);
+  pointer-events: none;
 }
 
 html[data-work-skin="doc"] .section,

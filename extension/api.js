@@ -8,7 +8,8 @@ const BASE = {
   demo: 'https://demo.trading212.com/api/v0'
 };
 const WORK_SKIN_IDS = new Set(['code', 'doc', 'sheet', 'slides', 'mail']);
-const ANALYSIS_GLOBAL_REQUIREMENT = '根据最新国际形势分析股市情况';
+const ANALYSIS_GLOBAL_REQUIREMENT_ZH = '根据最新国际形势分析股市情况';
+const ANALYSIS_GLOBAL_REQUIREMENT_EN = 'analyze the stock market based on the latest international situation';
 const SYMBOL_ALIASES = {
   FVAC: 'MP'
 };
@@ -847,6 +848,7 @@ export async function setRateLimitUntil(ts) {
 
 function buildAnalysisPrompts(positions, summary, lang, customUserContent) {
   const isZh = lang !== 'en';
+  const globalRequirement = isZh ? ANALYSIS_GLOBAL_REQUIREMENT_ZH : ANALYSIS_GLOBAL_REQUIREMENT_EN;
   const posLines = (positions || []).slice(0, 30).map(p => {
     const name = (p.instrument && p.instrument.name) || p.ticker || '—';
     const ticker = (p.instrument && p.instrument.ticker) || '';
@@ -854,15 +856,18 @@ function buildAnalysisPrompts(positions, summary, lang, customUserContent) {
     const price = p.currentPrice != null ? p.currentPrice : '—';
     const pl = (p.walletImpact && p.walletImpact.unrealizedProfitLoss != null) ? p.walletImpact.unrealizedProfitLoss : null;
     const value = (p.walletImpact && p.walletImpact.currentValue != null) ? p.walletImpact.currentValue : null;
-    return `${ticker || name} | 数量 ${qty} | 现价 ${price} | 市值 ${value != null ? value : '—'} | 未实现盈亏 ${pl != null ? pl : '—'}`;
+    if (isZh) {
+      return `${ticker || name} | 数量 ${qty} | 现价 ${price} | 市值 ${value != null ? value : '—'} | 未实现盈亏 ${pl != null ? pl : '—'}`;
+    }
+    return `${ticker || name} | Qty ${qty} | Price ${price} | Value ${value != null ? value : '—'} | Unrealized P/L ${pl != null ? pl : '—'}`;
   }).join('\n');
   const totalValue = summary && summary.totalValue != null ? summary.totalValue : '';
   const cash = summary && summary.cash && summary.cash.availableToTrade != null ? summary.cash.availableToTrade : '';
   const currency = summary && summary.currency ? summary.currency : '';
 
   const systemPrompt = isZh
-    ? `你是一位专业的股票分析助手。根据用户当前持仓与账户概况，请完整写出：1) 今日大盘/相关板块与宏观简要看法；2) 对持仓标的或整体今日涨跌的预判（可逐只或分板块）；3) 具体操作建议：哪些建议减仓/卖出、哪些可考虑加仓/买入，并简要说明理由。用分点或短段，结构清晰，不必刻意压缩字数。请务必${ANALYSIS_GLOBAL_REQUIREMENT}。`
-    : `You are a professional stock analyst. Given the user's current holdings and account summary, write a full analysis: 1) Brief view on today's market/sector and macro context; 2) Outlook for today (up/down by position or overall); 3) Action suggestions: what to trim/sell vs. consider buying, with brief reasoning. Use bullets or short paragraphs, no need to limit length. You must include this requirement: ${ANALYSIS_GLOBAL_REQUIREMENT}.`;
+    ? `你是一位专业的股票分析助手。根据用户当前持仓与账户概况，请完整写出：1) 今日大盘/相关板块与宏观简要看法；2) 对持仓标的或整体今日涨跌的预判（可逐只或分板块）；3) 具体操作建议：哪些建议减仓/卖出、哪些可考虑加仓/买入，并简要说明理由。用分点或短段，结构清晰，不必刻意压缩字数。请务必${globalRequirement}。`
+    : `You are a professional stock analyst. Given the user's current holdings and account summary, write a full analysis: 1) Brief view on today's market/sector and macro context; 2) Outlook for today (up/down by position or overall); 3) Action suggestions: what to trim/sell vs. consider buying, with brief reasoning. Use bullets or short paragraphs, no need to limit length. You must include this requirement: ${globalRequirement}.`;
 
   const defaultUserContent = isZh
     ? `账户总资产约 ${totalValue} ${currency}，可用现金约 ${cash} ${currency}。\n当前持仓：\n${posLines || '（暂无持仓）'}\n请给出今日行情分析与操作建议。`
@@ -870,9 +875,9 @@ function buildAnalysisPrompts(positions, summary, lang, customUserContent) {
   const userContent = (typeof customUserContent === 'string' && customUserContent.trim())
     ? customUserContent.trim()
     : defaultUserContent;
-  const mergedUserContent = userContent.includes(ANALYSIS_GLOBAL_REQUIREMENT)
+  const mergedUserContent = userContent.includes(globalRequirement)
     ? userContent
-    : `${userContent}\n${ANALYSIS_GLOBAL_REQUIREMENT}`;
+    : `${userContent}\n${globalRequirement}`;
   return { systemPrompt, userContent: mergedUserContent };
 }
 
