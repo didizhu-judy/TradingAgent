@@ -1,6 +1,22 @@
 # Trading 212 行情助手 (Chrome Extension)
 
-在浏览器中快速查看 Trading 212 持仓、股价与收益，无需打开 App。深色科技风界面，支持弹窗、右侧侧边栏与页面内悬浮窗。仅只读，不下单。
+在浏览器中快速查看 Trading 212 持仓、股价与收益，无需打开 App。支持弹窗、右侧侧边栏与页面内悬浮窗。仅只读，不下单。
+
+## 界面总览（5 套职业皮肤）
+
+> 目标：同一套盯盘功能，不同职业语境界面一键切换。
+
+| `Code Desk` 程序员语境 | `Document Desk` 文档语境 |
+| --- | --- |
+| ![Code Desk](extension/preview-skins/code-v24-380.png) | ![Document Desk](extension/preview-skins/doc-v22-380.png) |
+
+| `Sheet Desk` 表格语境 | `Slides Desk` 演示语境 |
+| --- | --- |
+| ![Sheet Desk](extension/preview-skins/sheet-v22-380.png) | ![Slides Desk](extension/preview-skins/slides-v24-380.png) |
+
+| `Mail Desk` 邮件语境 |
+| --- |
+| ![Mail Desk](extension/preview-skins/mail-v24-380.png) |
 
 ## 获取 API Key
 
