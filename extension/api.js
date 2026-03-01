@@ -425,6 +425,9 @@ async function getQuoteByTickerWithConfig(inputTicker, config) {
 async function getT212QuotesByTickers(tickers, config, forceRefresh = false) {
   const out = new Map();
   if (!config || !config.apiKey || !config.apiSecret) return out;
+  // Trading 212 /equity/portfolio/ticker 在扩展直连模式下常被 CORS/PNA 拦截；
+  // 仅在启用本地代理时请求该端点，避免 sidepanel 持续记录错误。
+  if (!config.useProxy) return out;
   if (Date.now() < t212QuotesRateLimitUntil) return out;
   const uniqTickers = Array.from(new Set(
     (Array.isArray(tickers) ? tickers : [])
@@ -481,14 +484,24 @@ async function getT212QuotesByTickers(tickers, config, forceRefresh = false) {
 }
 
 export async function getQuoteByTicker(inputTicker) {
+  let config = null;
+  try {
+    config = await getConfig();
+  } catch (_) {
+    config = null;
+  }
+
+  // 直连模式跳过 /portfolio/ticker，避免 CORS/PNA 报错噪音。
+  if (!config || !config.useProxy) {
+    return getQuoteByTickerFromStooq(inputTicker);
+  }
+
   let lastErr = null;
   try {
-    const config = await getConfig();
     return await getQuoteByTickerWithConfig(inputTicker, config);
   } catch (err) {
     lastErr = err;
   }
-
   try {
     return await getQuoteByTickerFromStooq(inputTicker);
   } catch (_) {
