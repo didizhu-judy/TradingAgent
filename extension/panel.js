@@ -812,8 +812,8 @@ function renderCodeLineRail() {
     const bottom = node.offsetTop + node.offsetHeight;
     if (bottom > contentBottom) contentBottom = bottom;
   });
-  const measuredHeight = Math.max(editor.clientHeight, contentBottom);
-  const dynamicCount = Math.ceil(measuredHeight / CODE_LINE_HEIGHT_PX) + 10;
+  const measuredHeight = Math.max(0, contentBottom);
+  const dynamicCount = Math.ceil(measuredHeight / CODE_LINE_HEIGHT_PX) + 1;
   const lineCount = Math.max(CODE_LINE_BASE_COUNT, dynamicCount);
   rail.textContent = Array.from({ length: lineCount }, (_, i) => String(i + 1)).join('\n');
 }
@@ -834,8 +834,8 @@ function renderCodeLineRailForEditor(editor) {
     const bottom = node.offsetTop + node.offsetHeight;
     if (bottom > contentBottom) contentBottom = bottom;
   });
-  const measuredHeight = Math.max(editor.clientHeight, contentBottom);
-  const dynamicCount = Math.ceil(measuredHeight / CODE_LINE_HEIGHT_PX) + 10;
+  const measuredHeight = Math.max(0, contentBottom);
+  const dynamicCount = Math.ceil(measuredHeight / CODE_LINE_HEIGHT_PX) + 1;
   const lineCount = Math.max(CODE_LINE_BASE_COUNT, dynamicCount);
   rail.textContent = Array.from({ length: lineCount }, (_, i) => String(i + 1)).join('\n');
 }
@@ -916,7 +916,19 @@ function syncDocPaperHeight() {
       editor.style.removeProperty('--doc-paper-height');
       return;
     }
-    const paperHeight = Math.max(editor.scrollHeight, editor.clientHeight) + 18;
+    const contentNodes = Array.from(editor.children).filter(node => {
+      if (!(node instanceof HTMLElement)) return false;
+      return !node.classList.contains('slides-thumb-rail')
+        && !node.classList.contains('code-line-rail')
+        && !node.classList.contains('sheet-row-rail')
+        && !node.classList.contains('mail-folder-rail');
+    });
+    let contentBottom = 0;
+    contentNodes.forEach(node => {
+      const bottom = node.offsetTop + node.offsetHeight;
+      if (bottom > contentBottom) contentBottom = bottom;
+    });
+    const paperHeight = Math.max(editor.clientHeight - 10, contentBottom + 10);
     editor.style.setProperty('--doc-paper-height', `${paperHeight}px`);
   });
 }
